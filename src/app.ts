@@ -13,10 +13,7 @@ import apiRouter from "./routes/api";
 const debug = process.env.NODE_ENV === "development";
 const app = express();
 const config: Config = JSON.parse(
-	fs.readFileSync(
-		path.join(__dirname, "..", "confs", "config.json"),
-		"utf-8",
-	),
+	fs.readFileSync(path.join(__dirname, "..", "confs", "config.json"), "utf-8")
 );
 
 app.set("view engine", "ejs");

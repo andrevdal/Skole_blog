@@ -14,7 +14,7 @@ router.get("/resources", (req, res) =>
 			age: 42,
 			city: "Asker",
 		},
-	]),
+	])
 );
 
 export default router;
