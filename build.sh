@@ -7,8 +7,8 @@ cd "$SCRIPT_PATH/" || exit 1
 
 # Purge everything and pretend it's a new start
 rm -r "dist" 2>/dev/null
-mkdir "dist" "dist/data" "dist/views" "dist/public"
-cp -r "src/data" "src/confs" "src/views" "src/public" "dist/"
+mkdir "dist" "dist/views" "dist/public" "temp"
+cp -r "src/views" "src/public" "dist/"
 
 tsc
 find "./dist/" -name '*.ts' -type f -delete

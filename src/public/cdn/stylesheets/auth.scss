@@ -1,0 +1,39 @@
+body {
+	font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+	background-color: black;
+	color: white;
+}
+
+.title {
+	text-align: center;
+	display: block;
+	font-size: 500%;
+}
+
+.instructions {
+	text-align: center;
+	display: block;
+	font-size: 300%;
+	margin-bottom: 3%;
+}
+
+.username,
+.password {
+	display: block;
+	margin: auto auto 0.5% auto;
+}
+.loginButton {
+	text-align: center;
+	margin-top: 0.5%;
+}
+.loginButton button {
+	background-color: white;
+	border: none;
+	width: 4%;
+	height: 3%;
+	font-family: "Monaco";
+	font-size: 100%;
+}
+.loginFeedback {
+	text-align: center;
+}
