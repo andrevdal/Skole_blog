@@ -32,7 +32,9 @@ register.addEventListener("submit", (e) => {
 						}),
 					})
 						.then((res) => res.json())
-						.then((obj) => (registerFeedback.innerHTML = obj.message))
+						.then(
+							(obj) => (registerFeedback.innerHTML = obj.message)
+						)
 						//.then(() => (window.location.href = ""))
 						.catch(
 							(err) =>

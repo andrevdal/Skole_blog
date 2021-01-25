@@ -2,9 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import { User } from "../models/users";
 
-mongoose.connect("mongodb://localhost/users", { useNewUrlParser: true });
-
 const router = express.Router();
+
+mongoose.connect("mongodb://localhost/users", { useNewUrlParser: true });
 
 router.get("/users", async (req, res) => {
 	res.jsonp(await User.find());
@@ -16,7 +16,7 @@ router.get("/login", async (req, res) => {
 
 router.post("/login", async (req, res) => {
 	try {
-		const user = await User.find({
+		const user = await User.findOne({
 			username: req.body.username,
 			hash: req.body.hash,
 			salt: req.body.salt,
@@ -46,7 +46,7 @@ router.post("/register", async (req, res) => {
 		});
 	} catch (err) {
 		res.status(500).jsonp({
-			message: `Something went wrong ${err}`
+			message: `Something went wrong ${err}`,
 		});
 	}
 });

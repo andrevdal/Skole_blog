@@ -1,3 +1,16 @@
+async function sha256(message) {
+	// encode as UTF-8
+	const msgBuffer = new TextEncoder().encode(message);
+	// hash the message
+	const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+	// convert ArrayBuffer to Array
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	// convert bytes to hex string
+	const hashHex = hashArray
+		.map((b) => ("00" + b.toString(16)).slice(-2))
+		.join("");
+	return hashHex;
+}
 const login = document.querySelector(".login"),
 	username = document.querySelector(".username"),
 	password = document.querySelector(".password"),
@@ -13,39 +26,26 @@ login.addEventListener("submit", (e) => {
 	if (usernameLength > 0)
 		if (usernameLength < 21)
 			if (passwordLength > 5)
-				if (passwordLength < 99) {
-					const salt = CryptoJS.lib.WordArray.random(
-						128 / 8
-					).toString();
-					fetch(`/auth/login`, {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							username: usernameValue,
-							hash: CryptoJS.PBKDF2(
-								passwordValue,
-								salt
-							).toString(),
-							salt,
-						}),
-					})
-						.then((res) => res.json())
-						.then((obj) => (loginFeedback.innerHTML = obj.message))
-						//.then(() => (window.location.href = ""))
-						.catch(
-							(err) =>
-								(loginFeedback.innerHTML = `Something went wrong ${err}`)
-						);
-				} else
+				if (passwordLength < 99)
+					if (!passwordValue.includes(":"))
+						sha256(passwordValue).then(pass =>
+							fetch("/api/login", {
+								headers: {
+									authorization: `Basic ${btoa(
+										`${usernameValue}:${pass}`
+									)}`,
+									"Content-Type": "application/json",
+								},
+							}).then(res => res.json())
+							.then(res => loginFeedback.innerHTML = `${res.message}`));
+					else
+						loginFeedback.innerHTML =
+							"Please select a password below 100 characters";
+				else
 					loginFeedback.innerHTML =
-						"Please select a password below 100 characters";
+						"Please select a password above 6 characters";
 			else
 				loginFeedback.innerHTML =
-					"Please select a password above 6 characters";
-		else
-			loginFeedback.innerHTML =
-				"Please select a username below 20 characters";
-	else loginFeedback.innerHTML = "Please select a username";
+					"Please select a username below 20 characters";
+		else loginFeedback.innerHTML = "Please select a username";
 });
