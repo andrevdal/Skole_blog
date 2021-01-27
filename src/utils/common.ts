@@ -1,5 +1,9 @@
 const cryptojs = require("crypto").webcrypto;
-
+/**
+ * Hash a string with sha256
+ * @param {string} message Message to be encrypted
+ * @returns {string} Encrypted message
+ */
 export async function sha256(message: string) {
 	// encode as UTF-8
 	const msgBuffer = new TextEncoder().encode(message);

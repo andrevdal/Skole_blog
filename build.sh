@@ -7,7 +7,7 @@ cd "$SCRIPT_PATH/" || exit 1
 
 # Purge everything and pretend it's a new start
 rm -r "dist" 2>/dev/null
-mkdir "dist" "dist/views" "dist/public" "temp"
+mkdir "dist" "dist/views" "dist/public" "temp" 2>/dev/null
 cp -r "src/views" "src/public" "dist/"
 
 tsc
