@@ -1,0 +1,17 @@
+nav {
+	top: 0;
+	background-color: indigo;
+	li {
+		display: inline-block;
+		background-color: green;
+		a {
+			text-decoration: none;
+		}
+	}
+}
+
+body {
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+}
