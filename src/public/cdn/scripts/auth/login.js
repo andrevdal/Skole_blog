@@ -34,10 +34,10 @@ login.addEventListener("submit", (e) => {
 		passwordLength = passwordValue.length,
 		usernameLength = usernameValue.length;
 
-	if (usernameLength > 0)
-		if (usernameLength < 21)
-			if (passwordLength > 5)
-				if (passwordLength < 99)
+	if (usernameLength > 0){
+		if (usernameLength < 21){
+			if (passwordLength > 5){
+				if (passwordLength < 99){
 					if (!passwordValue.includes(":"))
 						sha256(passwordValue).then((pass) =>
 							fetch("/api/login", {
@@ -53,15 +53,15 @@ login.addEventListener("submit", (e) => {
 									(res) =>
 										(loginFeedback.innerHTML = `${res.message}`)
 								)
-						);
+						);}
 					else
 						loginFeedback.innerHTML =
-							"Please select a password below 100 characters";
+							"Please select a password below 100 characters";}
 				else
 					loginFeedback.innerHTML =
-						"Please select a password above 6 characters";
+						"Please select a password above 6 characters";}
 			else
 				loginFeedback.innerHTML =
-					"Please select a username below 20 characters";
+					"Please select a username below 20 characters";}
 		else loginFeedback.innerHTML = "Please select a username";
 });
