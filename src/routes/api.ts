@@ -19,8 +19,12 @@ router.get("/login", async (req, res) => {
 		username: auth[0],
 		password: await sha256(auth[1]),
 	});
-	if (!user) res.jsonp({message: "User not found"});
-	else res.jsonp({message: "User Authentificated", user: {username: auth[0]}});
+	if (!user) res.jsonp({ message: "User not found" });
+	else
+		res.jsonp({
+			message: "User Authentificated",
+			user: { username: auth[0] },
+		});
 });
 
 router.get("/login", async (req, res) => {
@@ -34,8 +38,12 @@ router.get("/login", async (req, res) => {
 		username: auth[0],
 		password: await sha256(auth[1]),
 	});
-	if (!user) res.jsonp({message: "User not found"});
-	else res.jsonp({message: "User Authentificated", user: {username: auth[0]}});
+	if (!user) res.jsonp({ message: "User not found" });
+	else
+		res.jsonp({
+			message: "User Authentificated",
+			user: { username: auth[0] },
+		});
 });
 
 export default router;

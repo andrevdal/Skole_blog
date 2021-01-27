@@ -14,8 +14,19 @@ async function sha256(message) {
 const login = document.querySelector(".login"),
 	username = document.querySelector(".username"),
 	password = document.querySelector(".password"),
-	loginFeedback = document.querySelector(".loginFeedback");
+	loginFeedback = document.querySelector(".loginFeedback"),
+	loginButton = document.querySelector(".loginButtonMain"),
+	loginBox = document.querySelector(".loginBox"),
+	loginExit = document.querySelector(".x img");
 
+loginButton.addEventListener("click", () => {
+	loginBox.style.display = "block";
+	window.document.title = "Login";
+});
+loginExit.addEventListener("click", () => {
+	loginBox.style.display = "none";
+	window.document.title = "Home";
+});
 login.addEventListener("submit", (e) => {
 	e.preventDefault();
 	const usernameValue = username.value,
@@ -28,7 +39,7 @@ login.addEventListener("submit", (e) => {
 			if (passwordLength > 5)
 				if (passwordLength < 99)
 					if (!passwordValue.includes(":"))
-						sha256(passwordValue).then(pass =>
+						sha256(passwordValue).then((pass) =>
 							fetch("/api/login", {
 								headers: {
 									authorization: `Basic ${btoa(
@@ -36,8 +47,13 @@ login.addEventListener("submit", (e) => {
 									)}`,
 									"Content-Type": "application/json",
 								},
-							}).then(res => res.json())
-							.then(res => loginFeedback.innerHTML = `${res.message}`));
+							})
+								.then((res) => res.json())
+								.then(
+									(res) =>
+										(loginFeedback.innerHTML = `${res.message}`)
+								)
+						);
 					else
 						loginFeedback.innerHTML =
 							"Please select a password below 100 characters";
