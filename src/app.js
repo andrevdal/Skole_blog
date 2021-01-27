@@ -9,6 +9,9 @@ const authRouter = require("./routes/auth");
 const apiRouter = require("./routes/api");
 
 const debug = process.env.NODE_ENV === "development";
+let http;
+if (debug) http = require("https");
+else http = require("http");
 const app = express();
 const config = JSON.parse(
 	fs.readFileSync(path.join(__dirname, "..", "confs", "config.json"), "utf-8")
@@ -26,4 +29,10 @@ app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 
-app.listen(config.port || 5000);
+http.createServer(
+	{
+		key: debug ? fs.readFileSync(path.join(__dirname, "..", "confs", "./server.key")) : null,
+		cert: debug ? fs.readFileSync(path.join(__dirname, "..", "confs", "./server.cert")) : null,
+	},
+	app
+).listen(config.port || 5000, (err) => console.log(err)); 

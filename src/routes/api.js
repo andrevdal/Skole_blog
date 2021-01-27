@@ -1,6 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const path = require("path");
+
+const config = JSON.parse(
+	fs.readFileSync(
+		path.join(__dirname, "..", "..", "confs", "config.json"),
+		"utf-8"
+	)
+);
 
 const { sha256 } = require("../utils/common.js");
 
@@ -25,9 +34,12 @@ router.get("/login", async (req, res) => {
 		res.jsonp({
 			message: "User Authentificated",
 			user: { username: auth[0] },
-			token: jwt.sign({
-				user: "luca"
-			},"wdawd")
+			token: jwt.sign(
+				{
+					user: auth[0],
+				},
+				config.secret
+			),
 		});
 });
 

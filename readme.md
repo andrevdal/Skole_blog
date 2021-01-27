@@ -14,16 +14,21 @@ To start the website you must first install all dependencies and config, then yo
 
 ```json
 {
-	"port": 5000
+	"port": 5000,
+	"secret": "Super Duper secret here" // Used for JWT tokens
 }
+```
+And generate the certificate keys with 
+
+```sh
+openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out ./confs/server.cert -keyout ./confs/server.key
 ```
 
 After all that you can start the server
 
 ```sh
 npm install
-npm run build
-npm start
+npm test
 ```
 
 ### Self hosting (not recommended)

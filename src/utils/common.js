@@ -18,5 +18,5 @@ async function sha256(message) {
 }
 
 module.exports = {
-	sha256
+	sha256,
 };
