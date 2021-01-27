@@ -1,0 +1,19 @@
+nav {
+  top: 0;
+  background-color: indigo;
+}
+nav li {
+  display: inline-block;
+  background-color: green;
+}
+nav li a {
+  text-decoration: none;
+}
+
+body {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/*# sourceMappingURL=main.css.map */

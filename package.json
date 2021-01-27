@@ -5,17 +5,19 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "./build.sh",
-		"start": "mongod --config ./confs/mongod.yaml & sleep 2 && NODE_ENV=production node ./dist/app.js",
-		"test": "mongod --config ./confs/mongod.yaml & sleep 2 && NODE_ENV=development node ./dist/app.js",
+		"start": "mongod --config ./confs/mongod.yaml & sleep 2 && NODE_ENV=production node ./src/app.js",
+		"test": "mongod --config ./confs/mongod.yaml & sleep 2 && NODE_ENV=development node ./src/app.js",
 		"format": "prettier -w ."
 	},
 	"keywords": [],
 	"author": "",
 	"license": "Unlicensed",
 	"dependencies": {
+		"@types/jsonwebtoken": "^8.5.0",
 		"crypto-js": "^4.0.0",
 		"ejs": "^3.1.5",
 		"express": "^4.17.1",
+		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^5.11.13",
 		"node-fetch": "^2.6.1"
 	},

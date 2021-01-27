@@ -1,0 +1,110 @@
+body {
+  background-image: url(/cdn/assets/day.jpg);
+  background-size: cover;
+  color: white;
+  text-align: center;
+}
+
+.loginBorder {
+  display: inline-block;
+  background-color: #aedbf0;
+  width: 20%;
+  box-shadow: 7px 7px 10px #353333;
+  margin-top: 2vh;
+  font-size: 1vw;
+}
+
+.loginButtonMain {
+  background-image: url(/cdn/assets/cloud2.png);
+  background-size: cover;
+  color: #0e0e0e;
+  float: right;
+  padding: 2%;
+  position: static;
+  font-size: 1.3vw;
+}
+
+.loginButtonMain:hover {
+  cursor: pointer;
+  color: white;
+  background-image: url(/cdn/assets/cloud.png);
+  transition-duration: 0.25s;
+}
+
+.loginBox {
+  display: none;
+  transition-duration: 0.25s;
+}
+
+.x img {
+  width: 2vw;
+  float: left;
+  padding: 3%;
+}
+
+.x img:hover {
+  background-color: #86c0db;
+  border-radius: 50%;
+  transition-duration: 0.1s;
+  cursor: pointer;
+}
+
+.instructions {
+  text-align: center;
+  display: block;
+  font-size: 3vw;
+  margin-bottom: 3%;
+  margin-top: 7%;
+}
+
+.username,
+.password {
+  display: block;
+  padding: 1.5%;
+  font-size: 0.75vw;
+  border: none;
+  margin: auto auto 0.5% auto;
+  background-color: white;
+  color: #0e0e0e;
+}
+
+.loginButton {
+  text-align: center;
+  margin-top: 0.5%;
+  margin-bottom: 10%;
+}
+
+.loginButton button {
+  background-color: white;
+  font-family: "Monaco";
+  font-size: 1vw;
+  display: inline-block;
+  border: none;
+  padding: 1.5%;
+  width: 7vw;
+  border-radius: 20vh;
+}
+
+.loginButton button:hover {
+  background-color: #86c0db;
+  color: white;
+  transition-duration: 0.25s;
+  cursor: pointer;
+}
+
+.loginFeedback {
+  text-align: center;
+}
+
+.error {
+  color: crimson;
+}
+
+.logo {
+  width: 20%;
+  display: inline-block;
+  margin-top: 1%;
+  margin-left: 7%;
+}
+
+/*# sourceMappingURL=auth.css.map */
