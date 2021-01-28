@@ -1,4 +1,3 @@
-
 async function sha256(message) {
 	// encode as UTF-8
 	const msgBuffer = new TextEncoder().encode(message);
@@ -13,14 +12,13 @@ async function sha256(message) {
 	return hashHex;
 }
 const login = document.querySelector(".login");
-const	username = document.querySelector(".username");
-const	password = document.querySelector(".password");
-const	loginFeedback = document.querySelector(".loginFeedback");
-const	loginBox = document.querySelector(".loginBox");
-const	loginExit = document.querySelector(".x img");
-const 	retypePassword = document.querySelector(".retypePassword");
-const 	loginButton = document.querySelector(".loginButtonMain");
-
+const username = document.querySelector(".username");
+const password = document.querySelector(".password");
+const loginFeedback = document.querySelector(".loginFeedback");
+const loginBox = document.querySelector(".loginBox");
+const loginExit = document.querySelector(".x img");
+const retypePassword = document.querySelector(".retypePassword");
+const loginButton = document.querySelector(".loginButtonMain");
 
 loginButton.addEventListener("click", () => {
 	window.location.href = "/auth/login";
@@ -38,53 +36,50 @@ login.addEventListener("submit", (e) => {
 	const usernameLength = usernameValue.length;
 	const retypePasswordValue = retypePassword.value;
 
-
-
 	if (usernameLength > 0) {
 		if (usernameLength < 21) {
 			if (passwordLength > 5) {
 				if (passwordLength < 99) {
-					if(retypePasswordValue == passwordValue){
-								if (!usernameValue.includes(":")){
-									sha256(passwordValue).then((pass) =>
-										fetch("/api/register", {
-											headers: {
-												authorization: `Basic ${btoa(
-													`${usernameValue}:${pass}`
-												)}`,
-												"Content-Type": "application/json",
-											},
-										})
-											.then((res) => res.json())
-											.then(
-												(res) =>{
-													loginFeedback.innerHTML = "This username is allready in use";
-													window.location.href = "/auth/login";
-													loginFeedback.classList.add('error');
-												}
-									));
-							} else {
-								loginFeedback.innerHTML =
+					if (retypePasswordValue == passwordValue) {
+						if (!usernameValue.includes(":")) {
+							sha256(passwordValue).then((pass) =>
+								fetch("/api/register", {
+									headers: {
+										authorization: `Basic ${btoa(
+											`${usernameValue}:${pass}`
+										)}`,
+										"Content-Type": "application/json",
+									},
+								})
+									.then((res) => res.json())
+									.then((res) => {
+										loginFeedback.innerHTML =
+											"This username is allready in use";
+										window.location.href =
+											"/auth/login?login=true";
+										loginFeedback.classList.add("error");
+									})
+							);
+						} else {
+							loginFeedback.innerHTML =
 								"The username cannot include the `:` character";
-								loginFeedback.classList.add('error');
-							}
+							loginFeedback.classList.add("error");
+						}
 					} else {
-						loginFeedback.innerHTML =
-									"Passwords need to match"
-									loginFeedback.classList.add('error');
+						loginFeedback.innerHTML = "Passwords need to match";
+						loginFeedback.classList.add("error");
 					}
 				} else
 					loginFeedback.innerHTML =
 						"Please select a password below 100 characters";
-						loginFeedback.classList.add('error');
+				loginFeedback.classList.add("error");
 			} else
 				loginFeedback.innerHTML =
 					"Please select a password above 6 characters";
-					loginFeedback.classList.add('error');
+			loginFeedback.classList.add("error");
 		} else
 			loginFeedback.innerHTML =
 				"Please select a username below 20 characters";
-				loginFeedback.classList.add('error');
-	} else loginFeedback.innerHTML = 
-	"Please select a username";
+		loginFeedback.classList.add("error");
+	} else loginFeedback.innerHTML = "Please select a username";
 });

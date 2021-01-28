@@ -24,7 +24,9 @@ const username = "Luca",
 	hash = await sha256(password);
 const res = await fetch(`${baseURL}/api/register`, {
 	headers: {
-		authorization: `Basic ${Buffer.from(`${username}:${hash}`).toString('base64')}`,
+		authorization: `Basic ${Buffer.from(`${username}:${hash}`).toString(
+			"base64"
+		)}`,
 		"Content-Type": "application/json",
 	},
 });

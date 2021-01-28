@@ -72,25 +72,25 @@ router.get("/register", async (req, res) => {
 		.split(":");
 	auth[1] = await sha256(auth[1]);
 	// Make the user and save them
-	console.log(auth)
+	console.log(auth);
 	const user = new User({
 		username: auth[0],
 		hash: auth[1],
 	});
 	try {
-	await user.save();
+		await user.save();
 
-	res.jsonp({
-		message: "User Saved",
-		user: { username: auth[0] },
-		token: jwt.sign(
-			{
-				username: auth[0],
-			},
-			config.secret
-		),
-	});
-	} catch(err) {
+		res.jsonp({
+			message: "User Saved",
+			user: { username: auth[0] },
+			token: jwt.sign(
+				{
+					username: auth[0],
+				},
+				config.secret
+			),
+		});
+	} catch (err) {
 		res.jsonp({
 			message: "An error has occured when saving the usr",
 			err,

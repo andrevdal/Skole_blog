@@ -23,18 +23,20 @@ const username = "Luca",
 
 const res = await fetch(`${baseURL}/api/login`, {
 	headers: {
-		authorization: `Basic ${Buffer.from(`${username}:${hash}`).toString('base64')}`,
+		authorization: `Basic ${Buffer.from(`${username}:${hash}`).toString(
+			"base64"
+		)}`,
 		"Content-Type": "application/json",
 	},
-})
+});
 
 const obj = await res.json();
-console.log(obj)
+console.log(obj);
 
 const res2 = await fetch(`${baseURL}/api/secret`, {
 	headers: {
 		authorization: `Bearer ${obj.token}`,
 		"Content-Type": "application/json",
 	},
-})
+});
 console.log(JSON.stringify(await res2.json(), null, 4));

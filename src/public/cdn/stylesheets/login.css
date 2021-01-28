@@ -2,7 +2,6 @@ body {
 	background-image: url(/cdn/assets/day.jpg);
 	background-size: cover;
 	text-align: center;
-	
 }
 
 .loginBorder {
@@ -78,7 +77,7 @@ body {
 
 .loginButton button {
 	background-color: white;
-	
+
 	font-size: 1vw;
 	display: inline-block;
 	border: none;
@@ -110,12 +109,12 @@ body {
 	margin-left: 7%;
 }
 
-a.register{
+a.register {
 	text-decoration: none;
 	color: rgb(32, 59, 179);
 }
 
-a.register:hover{
+a.register:hover {
 	cursor: pointer;
 	color: rgb(145, 79, 206);
 }

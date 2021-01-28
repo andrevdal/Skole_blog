@@ -11,6 +11,10 @@ async function sha256(message) {
 		.join("");
 	return hashHex;
 }
+function showLogin() {
+	loginBox.style.display = "block";
+	window.document.title = "Login";
+}
 const login = document.querySelector(".login"),
 	username = document.querySelector(".username"),
 	password = document.querySelector(".password"),
@@ -20,10 +24,8 @@ const login = document.querySelector(".login"),
 	loginExit = document.querySelector(".x img"),
 	url = new URL(window.location.href);
 
-loginButton.addEventListener("click", () => {
-	loginBox.style.display = "block";
-	window.document.title = "Login";
-});
+if (url.searchParams.get("login")) showLogin();
+loginButton.addEventListener("click", showLogin);
 loginExit.addEventListener("click", () => {
 	loginBox.style.display = "none";
 	window.document.title = "Home";
@@ -39,7 +41,7 @@ login.addEventListener("submit", (e) => {
 		if (usernameLength < 21) {
 			if (passwordLength > 5) {
 				if (passwordLength < 99) {
-					if (!usernameValue.includes(":")){
+					if (!usernameValue.includes(":")) {
 						sha256(passwordValue).then((pass) =>
 							fetch("/api/login", {
 								headers: {
@@ -58,19 +60,19 @@ login.addEventListener("submit", (e) => {
 					} else {
 						loginFeedback.innerHTML =
 							"The username cannot include the `:` character";
-							loginFeedback.classList.add('error');
+						loginFeedback.classList.add("error");
 					}
 				} else
 					loginFeedback.innerHTML =
 						"Please select a password below 100 characters";
-						loginFeedback.classList.add('error');
+				loginFeedback.classList.add("error");
 			} else
 				loginFeedback.innerHTML =
 					"Please select a password above 6 characters";
-					loginFeedback.classList.add('error');
+			loginFeedback.classList.add("error");
 		} else
 			loginFeedback.innerHTML =
 				"Please select a username below 20 characters";
-				loginFeedback.classList.add('error');
+		loginFeedback.classList.add("error");
 	} else loginFeedback.innerHTML = "Please select a username";
 });

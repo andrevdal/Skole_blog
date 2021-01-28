@@ -14,7 +14,7 @@ body {
 }
 
 .x img:hover {
-	background-color:  #151d35;
+	background-color: #151d35;
 	border-radius: 50%;
 	transition-duration: 0.1s;
 	cursor: pointer;
@@ -33,8 +33,8 @@ body {
 }
 
 .loginButton button {
-    background-color: #2c3a66;
-    color: white;
+	background-color: #2c3a66;
+	color: white;
 	font-size: 1vw;
 	display: inline-block;
 	border: none;

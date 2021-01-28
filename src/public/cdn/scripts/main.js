@@ -1,9 +1,9 @@
 const themeToggle = document.querySelector("#dn");
-const themeCSS = document.querySelector("#themeCSS")
-themeToggle.addEventListener("toggle", (e) => {
-    if (themeToggle.value) {
-        themeCSS.innerHTML = `<link href="/cdn/styles/night.css"/>`
-    } else {
-        themeCSS.innerHTML = `<link href="/cdn/styles/light.css"/>`
-    }
-})
+const themeCSS = document.querySelector("#themecss");
+themeToggle.addEventListener("click", (e) => {
+	if (themeToggle.checked) {
+		themeCSS.setAttribute("href", "/cdn/stylesheets/night.css");
+	} else {
+		themeCSS.setAttribute("href", "/cdn/stylesheets/light.css");
+	}
+});
