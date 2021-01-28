@@ -1,8 +1,8 @@
 body {
 	background-image: url(/cdn/assets/day.jpg);
 	background-size: cover;
-	color: white;
 	text-align: center;
+	
 }
 
 .loginBorder {
@@ -51,19 +51,21 @@ body {
 
 .instructions {
 	text-align: center;
+	margin-right: 8%;
 	display: block;
-	font-size: 3vw;
+	font-size: 2.5vw;
 	margin-bottom: 3%;
 	margin-top: 7%;
 }
 
 .username,
+.retypePassword,
 .password {
 	display: block;
 	padding: 1.5%;
 	font-size: 0.75vw;
 	border: none;
-	margin: auto auto 0.5% auto;
+	margin: auto auto 1% auto;
 	background-color: white;
 	color: #0e0e0e;
 }
@@ -76,7 +78,7 @@ body {
 
 .loginButton button {
 	background-color: white;
-	font-family: "Monaco";
+	
 	font-size: 1vw;
 	display: inline-block;
 	border: none;
@@ -98,6 +100,7 @@ body {
 
 .error {
 	color: crimson;
+	font-style: italic;
 }
 
 .logo {
@@ -105,4 +108,14 @@ body {
 	display: inline-block;
 	margin-top: 1%;
 	margin-left: 7%;
+}
+
+a.register{
+	text-decoration: none;
+	color: rgb(32, 59, 179);
+}
+
+a.register:hover{
+	cursor: pointer;
+	color: rgb(145, 79, 206);
 }

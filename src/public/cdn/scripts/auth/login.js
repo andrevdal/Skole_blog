@@ -17,7 +17,8 @@ const login = document.querySelector(".login"),
 	loginFeedback = document.querySelector(".loginFeedback"),
 	loginButton = document.querySelector(".loginButtonMain"),
 	loginBox = document.querySelector(".loginBox"),
-	loginExit = document.querySelector(".x img");
+	loginExit = document.querySelector(".x img"),
+	url = new URL(window.location.href);
 
 loginButton.addEventListener("click", () => {
 	loginBox.style.display = "block";
@@ -57,15 +58,19 @@ login.addEventListener("submit", (e) => {
 					} else {
 						loginFeedback.innerHTML =
 							"The username cannot include the `:` character";
+							loginFeedback.classList.add('error');
 					}
 				} else
 					loginFeedback.innerHTML =
 						"Please select a password below 100 characters";
+						loginFeedback.classList.add('error');
 			} else
 				loginFeedback.innerHTML =
 					"Please select a password above 6 characters";
+					loginFeedback.classList.add('error');
 		} else
 			loginFeedback.innerHTML =
 				"Please select a username below 20 characters";
+				loginFeedback.classList.add('error');
 	} else loginFeedback.innerHTML = "Please select a username";
 });
