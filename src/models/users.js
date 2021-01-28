@@ -5,15 +5,52 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		unique: true,
+		lowercase: true,
+		maxlength: 21,
+		match: /^[^|:!"#.,<>]*$/,
 	},
 	hash: {
 		type: String,
 		required: true,
 	},
-	salt: {
-		type: String,
-		required: false,
+	created_at: {
+		type: Date,
+		default: Date.now,
+		immutable: true,
 	},
+	external: {
+		twitter: {
+			url: {
+				type: String,
+			},
+			show: {
+				type: Boolean,
+			},
+		},
+		youtube: {
+			url: {
+				type: String,
+			},
+			show: {
+				type: Boolean,
+			},
+		},
+		twitch: {
+			url: {
+				type: String,
+			},
+			show: {
+				type: Boolean,
+			},
+		},
+	},
+});
+// This is the function that filters what the api returns
+userSchema.method("toJSON", () => {
+	const user = this.toObject();
+	delete user.hash;
+	delete user.__v;
+	return user;
 });
 const User = mongoose.model("user", userSchema);
 

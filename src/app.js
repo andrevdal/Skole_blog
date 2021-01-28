@@ -2,6 +2,7 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const cookieParser = require("cookie-parser");
 
 // Routers
 const indexRouter = require("./routes/index");
@@ -24,6 +25,7 @@ if (debug) app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser(config.secret));
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);

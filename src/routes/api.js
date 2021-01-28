@@ -72,7 +72,6 @@ router.get("/register", async (req, res) => {
 		.split(":");
 	auth[1] = await sha256(auth[1]);
 	// Make the user and save them
-	console.log(auth);
 	const user = new User({
 		username: auth[0],
 		hash: auth[1],
