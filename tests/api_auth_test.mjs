@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
 import cryptojs from "crypto";
-
 const crypto = cryptojs.webcrypto;
 
 async function sha256(message) {
@@ -16,18 +15,26 @@ async function sha256(message) {
 		.join("");
 	return hashHex;
 }
-
 const baseURL = "http://localhost:5000";
 
 const username = "Luca",
 	password = "hunter2",
 	hash = await sha256(password);
-const res = await fetch(`${baseURL}/api/register`, {
+
+const res = await fetch(`${baseURL}/api/login`, {
 	headers: {
 		authorization: `Basic ${Buffer.from(`${username}:${hash}`).toString('base64')}`,
 		"Content-Type": "application/json",
 	},
-});
-console.log(JSON.stringify(await res.json(), null, 4));
+})
 
-console.log(res.status);
+const obj = await res.json();
+console.log(obj)
+
+const res2 = await fetch(`${baseURL}/api/secret`, {
+	headers: {
+		authorization: `Bearer ${obj.token}`,
+		"Content-Type": "application/json",
+	},
+})
+console.log(JSON.stringify(await res2.json(), null, 4));

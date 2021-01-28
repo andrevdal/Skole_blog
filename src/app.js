@@ -31,8 +31,16 @@ app.use("/api", apiRouter);
 
 http.createServer(
 	{
-		key: debug ? fs.readFileSync(path.join(__dirname, "..", "confs", "./server.key")) : null,
-		cert: debug ? fs.readFileSync(path.join(__dirname, "..", "confs", "./server.cert")) : null,
+		key: debug
+			? fs.readFileSync(
+					path.join(__dirname, "..", "confs", "./server.key")
+			  )
+			: null,
+		cert: debug
+			? fs.readFileSync(
+					path.join(__dirname, "..", "confs", "./server.cert")
+			  )
+			: null,
 	},
 	app
-).listen(config.port || 5000, (err) => console.log(err)); 
+).listen(config.port || 5000, (err) => console.log(err));

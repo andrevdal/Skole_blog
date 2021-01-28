@@ -38,7 +38,7 @@ login.addEventListener("submit", (e) => {
 		if (usernameLength < 21) {
 			if (passwordLength > 5) {
 				if (passwordLength < 99) {
-					if (!passwordValue.includes(":"))
+					if (!usernameValue.includes(":")){
 						sha256(passwordValue).then((pass) =>
 							fetch("/api/login", {
 								headers: {
@@ -54,6 +54,10 @@ login.addEventListener("submit", (e) => {
 										(loginFeedback.innerHTML = `${res.message}`)
 								)
 						);
+					} else {
+						loginFeedback.innerHTML =
+							"The username cannot include the `:` character";
+					}
 				} else
 					loginFeedback.innerHTML =
 						"Please select a password below 100 characters";

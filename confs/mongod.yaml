@@ -7,7 +7,7 @@ storage:
     enabled: true
   dbPath: ./data
 net:
-  bindIp: 127.0.0.1
+  bindIp: 0.0.0.0
   port: 27017
 setParameter:
   enableLocalhostAuthBypass: true
