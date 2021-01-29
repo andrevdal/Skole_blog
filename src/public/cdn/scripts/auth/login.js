@@ -16,14 +16,14 @@ function showLogin() {
 	window.document.title = "Login";
 }
 function setCookie(name, value, days) {
-	var expires = "";
+	let expires = "";
 	if (days) {
-		var date = new Date();
+		const date = new Date();
 		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
 		expires = "; expires=" + date.toUTCString();
 	}
 	document.cookie =
-		name + "=" + (value || "") + expires + "; path=/; Secure;";
+		name + "=" + (value || "") + expires + "; path=/; Secure;SameSite=Strict;";
 }
 
 const login = document.querySelector(".login"),

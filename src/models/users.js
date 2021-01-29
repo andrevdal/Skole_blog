@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
 		default: Date.now,
 		immutable: true,
 	},
+	admin: {
+		type: Boolean,
+		default: false,
+	},
 	external: {
 		twitter: {
 			url: {
@@ -46,7 +50,7 @@ const userSchema = new mongoose.Schema({
 	},
 });
 // This is the function that filters what the api returns
-userSchema.method("toJSON", () => {
+userSchema.method("toJSON", function() {
 	const user = this.toObject();
 	delete user.hash;
 	delete user.__v;

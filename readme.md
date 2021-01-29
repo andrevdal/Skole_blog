@@ -12,10 +12,10 @@ A blog website. The goals of this project are
 To start the website you must first install all dependencies and config, then you can just start the server.
 `data/config.json` is just
 
-```json
+```jsonc
 {
-	"port": 5000,
-	"secret": "Super Duper secret here" // Used for JWT tokens
+	"port": 5000, // Port available for http (https during testing)
+	"secret": "Super Duper secret here" // Used for JWT tokens and cookie secret
 }
 ```
 
@@ -66,3 +66,4 @@ If you wish to host your own instance it's best to optimise a couple of stuff.
 ### Formatting
 
 After saving your code please run `npm run format` to format the code as per the configuration in `package.json` in `prettier`
+ 
