@@ -7,7 +7,6 @@ const cookieParser = require("cookie-parser");
 
 // Routers
 const indexRouter = require("./routes/index");
-const authRouter = require("./routes/auth");
 const apiRouter = require("./routes/api");
 
 const debug = process.env.NODE_ENV === "development";
@@ -21,17 +20,17 @@ const config = JSON.parse(
 function parseError(req, res, err) {
 	res.status(err.status).jsonp({ error: err });
 }
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
 
 if (debug) app.use(express.static(path.join(__dirname, "public")));
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(config.secret));
 
 app.use("/", indexRouter);
-app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 app.use((_req, _res, next) => next(createError(404)));
 

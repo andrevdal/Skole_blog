@@ -20,9 +20,18 @@ const { Blog } = require("../models/blogs.js");
 const router = express.Router();
 async function restrict(req, res, next) {
 	let user;
-	const { type, data } = await decodeAuth(
-		req.headers["authorization"] || req.cookies["authorization"]
-	);
+	try {
+		var { type, data } = await decodeAuth(
+			req.headers["authorization"] || req.cookies["token"]
+		);
+	} catch (err) {
+		return res.status(401).jsonp({
+			message: "Unauthorized",
+			err,
+			something: req.headers["authorization"],
+			else: req.cookies["authorization"],
+		});
+	}
 	// If the request comes from a user
 	if (type === "Basic") {
 		user = await User.findOne(data).exec();
@@ -33,8 +42,8 @@ async function restrict(req, res, next) {
 	req.user = user;
 	if (user) return next();
 }
-async function decodeAuth(authHeader) {
-	let [type, data] = authHeader.split(" ");
+async function decodeAuth(auth) {
+	let [type, data] = auth.split(" ");
 	if (type === "Basic") {
 		// Decrypt the message
 		let [username, hash] = Buffer.from(data, "base64")
@@ -128,8 +137,17 @@ router.post("/register", async (req, res, next) => {
 		}
 	}
 });
+// Users
 
-router.get("/users", async (req, res) => res.jsonp(await User.find()));
+router.get("/users/:username?", async (req, res) => {
+	if (req.params.username) {
+		const user = await User.findOne({ username: req.params.username });
+		if (user) res.status(200).jsonp(user);
+		else res.status(404).jsonp({ message: "User not found" });
+	} else return res.status(200).jsonp(await User.find());
+});
+
+router.get("/user", restrict, (req, res) => res.jsonp(req.user));
 
 // Blogs
 
@@ -153,10 +171,35 @@ router.post("/blogs/new", restrict, async (req, res, next) => {
 	}
 });
 
-router.get("/blogs", async (req, res, next) => {
-	const blog = await Blog.findOne({ short_name: req.query.name });
-	if (blog) res.status(200).jsonp(blog);
-	else return next(createError(404, "Blog not found"));
+router.get("/blogs/:user?/:id?", async (req, res, next) => {
+	if (req.params.user) {
+		let author_id;
+		if (isNaN(req.params.user)) {
+			const user = await User.findOne({ username: req.params.user });
+			author_id = user.id;
+		} else {
+			author_id = req.params.user;
+		}
+		if (req.params.id) {
+			if (isNaN(req.params.id)) {
+				const blog = await Blog.findOne({
+					short_name: req.params.id,
+					author: author_id,
+				});
+				if (blog) res.status(200).jsonp(blog);
+				else return next(createError(404, "Blog not found"));
+			} else {
+				const blog = await Blog.findOne({
+					_id: req.params.id,
+					author: author_id,
+				});
+				if (blog) res.status(200).jsonp(blog);
+				else return next(createError(404, "Blog not found"));
+			}
+		} else res.status(200).jsonp(await Blog.find({ author: author_id }));
+	} else {
+		res.status(200).jsonp(await Blog.find());
+	}
 });
 
 module.exports = router;

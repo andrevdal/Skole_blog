@@ -2,26 +2,36 @@
 
 ## Login
 
-To login as a user you most make a GET request to `/login` with the `Authorization` header set to the `username:hashedPassword` encoded in base64. Take this example
+To authentificate you must submit a header that is a base64 encoded string of the username and sha256 hashed password. Such as
 
-```js
-username = "Luca";
-password = "hunter2";
+Username: Luca
 
-authorization = `Basic ${btoa(`${username}:${await sha256(password)}`)}`;
-// Basic THVjYTpmNTJmYmQzMmIyYjNiODZmZjg4ZWY2YzQ5MDYyODI4NWY0ODJhZjE1ZGRjYjI5NTQxZjk0YmNmNTI2YTNmNmM3
-```
+Password: hunter2
 
-Then
+String to encode: `luca:f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7`
+
+> **Warning!** Because of this the username may **NOT** include a colon (:).
 
 ```http
-GET /login
-Authorization: Basic THVjYTpmNTJmYmQzMmIyYjNiODZmZjg4ZWY2YzQ5MDYyODI4NWY0ODJhZjE1ZGRjYjI5NTQxZjk0YmNmNTI2YTNmNmM3
+GET /api/login HTTP/2.0
+Authorization: Basic bHVjYTpmNTJmYmQzMmIyYjNiODZmZjg4ZWY2YzQ5MDYyODI4NWY0ODJhZjE1ZGRjYjI5NTQxZjk0YmNmNTI2YTNmNmM3
 ```
 
-This should return an object with a `message` key which is used on the frontend usually, and a `token` which should be used for all requests from now on.
-It might include an `err` key if anything has happened. Those might get messy
+Returns a JSON object
+
+```jsonc
+{
+	"message": "User Authentificated",
+	"expiresIn": 3600, // In ms
+	"token": "long long token" // JWT token
+}
+```
 
 ## Register
 
-Registering is almost the same, it's just the end point that changes from `/login` to `/register`.
+Same way to transfer the username and password,
+
+```http
+POST /api/login HTTP/2.0
+Authorization: Basic bHVjYTpmNTJmYmQzMmIyYjNiODZmZjg4ZWY2YzQ5MDYyODI4NWY0ODJhZjE1ZGRjYjI5NTQxZjk0YmNmNTI2YTNmNmM3
+```
