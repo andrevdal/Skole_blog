@@ -1,3 +1,13 @@
+function setCookie(name, value, days) {
+	var expires = "";
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+		expires = "; expires=" + date.toUTCString();
+	}
+	document.cookie =
+		name + "=" + (value || "") + expires + "; path=/; Secure;";
+}
 async function sha256(message) {
 	// encode as UTF-8
 	const msgBuffer = new TextEncoder().encode(message);
@@ -42,24 +52,30 @@ login.addEventListener("submit", (e) => {
 				if (passwordLength < 99) {
 					if (retypePasswordValue == passwordValue) {
 						if (!usernameValue.includes(":")) {
-							sha256(passwordValue).then((pass) =>
-								fetch("/api/register", {
+							sha256(passwordValue).then(async (pass) => {
+								const res = await fetch("/api/register", {
+									method: "POST",
 									headers: {
 										authorization: `Basic ${btoa(
 											`${usernameValue}:${pass}`
 										)}`,
 										"Content-Type": "application/json",
 									},
-								})
-									.then((res) => res.json())
-									.then((res) => {
-										loginFeedback.innerHTML =
-											"This username is allready in use";
-										window.location.href =
-											"/auth/login?login=true";
-										loginFeedback.classList.add("error");
-									})
-							);
+								});
+								const obj = await res.json();
+								loginFeedback.innerHTML = obj.message;
+								if (res.ok) {
+									window.location.href =
+										"/auth/login?login=true";
+								} else {
+									loginFeedback.classList.add("error");
+									setCookie(
+										"token",
+										`Bearer ${obj.token}`,
+										1
+									);
+								}
+							});
 						} else {
 							loginFeedback.innerHTML =
 								"The username cannot include the `:` character";

@@ -13,8 +13,11 @@
 	"author": "",
 	"license": "Unlicensed",
 	"dependencies": {
+		"cookie-parser": "^1.4.5",
 		"ejs": "^3.1.5",
 		"express": "^4.17.1",
+		"flakeid": "^1.0.0",
+		"http-errors": "^1.7.2",
 		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^5.11.13",
 		"nodemon": "^2.0.7"

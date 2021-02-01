@@ -1,9 +1,9 @@
 ## What is this?
 
 A blog website. The goals of this project are
-[ ] Login system
-[ ] Mongodb for saving
-[ ] Look pretty
+[x] Login system  
+[x] Mongodb for saving  
+[ ] Look pretty  
 
 ## Usage
 
@@ -12,10 +12,10 @@ A blog website. The goals of this project are
 To start the website you must first install all dependencies and config, then you can just start the server.
 `data/config.json` is just
 
-```json
+```jsonc
 {
-	"port": 5000,
-	"secret": "Super Duper secret here" // Used for JWT tokens
+	"port": 5000, // Port available for http (https during testing)
+	"secret": "Super Duper secret here" // Used for JWT tokens and cookie secret
 }
 ```
 

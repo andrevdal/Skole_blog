@@ -15,6 +15,21 @@ function showLogin() {
 	loginBox.style.display = "block";
 	window.document.title = "Login";
 }
+function setCookie(name, value, days) {
+	let expires = "";
+	if (days) {
+		const date = new Date();
+		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+		expires = "; expires=" + date.toUTCString();
+	}
+	document.cookie =
+		name +
+		"=" +
+		(value || "") +
+		expires +
+		"; path=/; Secure;SameSite=Strict;";
+}
+
 const login = document.querySelector(".login"),
 	username = document.querySelector(".username"),
 	password = document.querySelector(".password"),
@@ -42,21 +57,19 @@ login.addEventListener("submit", (e) => {
 			if (passwordLength > 5) {
 				if (passwordLength < 99) {
 					if (!usernameValue.includes(":")) {
-						sha256(passwordValue).then((pass) =>
-							fetch("/api/login", {
+						sha256(passwordValue).then(async (pass) => {
+							const res = await fetch("/api/login", {
 								headers: {
 									authorization: `Basic ${btoa(
 										`${usernameValue}:${pass}`
 									)}`,
 									"Content-Type": "application/json",
 								},
-							})
-								.then((res) => res.json())
-								.then(
-									(res) =>
-										(loginFeedback.innerHTML = `${res.message}`)
-								)
-						);
+							});
+							const obj = await res.json();
+							loginFeedback.innerHTML = `${obj.message}`;
+							setCookie("token", `Bearer ${obj.token}`, 1);
+						});
 					} else {
 						loginFeedback.innerHTML =
 							"The username cannot include the `:` character";
