@@ -1,9 +1,9 @@
 ## What is this?
 
 A blog website. The goals of this project are
-[ ] Login system
-[ ] Mongodb for saving
-[ ] Look pretty
+[x] Login system  
+[x] Mongodb for saving  
+[ ] Look pretty  
 
 ## Usage
 
@@ -66,4 +66,3 @@ If you wish to host your own instance it's best to optimise a couple of stuff.
 ### Formatting
 
 After saving your code please run `npm run format` to format the code as per the configuration in `package.json` in `prettier`
- 

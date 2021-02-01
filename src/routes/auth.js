@@ -29,10 +29,6 @@ function restrict(req, res, next) {
 }
 mongoose.connect("mongodb://localhost/users", { useNewUrlParser: true });
 
-router.get("/users", restrict, async (req, res) => {
-	res.jsonp(await User.find());
-});
-
 router.get("/login", async (req, res) => {
 	res.render("auth/login");
 });

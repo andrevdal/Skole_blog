@@ -54,6 +54,7 @@ login.addEventListener("submit", (e) => {
 						if (!usernameValue.includes(":")) {
 							sha256(passwordValue).then(async (pass) => {
 								const res = await fetch("/api/register", {
+									method: "POST",
 									headers: {
 										authorization: `Basic ${btoa(
 											`${usernameValue}:${pass}`
@@ -62,11 +63,18 @@ login.addEventListener("submit", (e) => {
 									},
 								});
 								const obj = await res.json();
-								loginFeedback.innerHTML =
-									"This username is allready in use";
-								window.location.href = "/auth/login?login=true";
-								loginFeedback.classList.add("error");
-								setCookie("token", `Bearer ${obj.token}`, 1);
+								loginFeedback.innerHTML = obj.message;
+								if (res.ok) {
+									window.location.href =
+										"/auth/login?login=true";
+								} else {
+									loginFeedback.classList.add("error");
+									setCookie(
+										"token",
+										`Bearer ${obj.token}`,
+										1
+									);
+								}
 							});
 						} else {
 							loginFeedback.innerHTML =

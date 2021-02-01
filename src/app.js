@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
@@ -17,7 +18,9 @@ const app = express();
 const config = JSON.parse(
 	fs.readFileSync(path.join(__dirname, "..", "confs", "config.json"), "utf-8")
 );
-
+function parseError(req, res, err) {
+	res.status(err.status).jsonp({ error: err });
+}
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
@@ -30,6 +33,17 @@ app.use(cookieParser(config.secret));
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
+app.use((_req, _res, next) => next(createError(404)));
+
+app.use((err, req, res, _next) => {
+	// Set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = debug ? err : {};
+
+	// Render the error page
+	if (req.path.includes("/api")) parseError(req, res, err);
+	else res.status(err.status || 500).render("error");
+});
 
 http.createServer(
 	{
@@ -45,4 +59,9 @@ http.createServer(
 			: null,
 	},
 	app
-).listen(config.port || 5000, (err) => console.log(err));
+).listen(config.port || 5000, (err) => {
+	if (err) console.log(err);
+	console.log(
+		`Online at ${debug ? "https" : "http"}://localhost:${config.port}/`
+	);
+});
