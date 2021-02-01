@@ -3,7 +3,7 @@
 A blog website. The goals of this project are
 [x] Login system  
 [x] Mongodb for saving  
-[ ] Look pretty  
+[ ] Look pretty
 
 ## Usage
 

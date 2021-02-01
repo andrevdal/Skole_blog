@@ -1,10 +1,7 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
-
-const { User } = require("../models/users.js");
 
 const config = JSON.parse(
 	fs.readFileSync(
@@ -27,7 +24,6 @@ function restrict(req, res, next) {
 		next();
 	});
 }
-mongoose.connect("mongodb://localhost/users", { useNewUrlParser: true });
 
 router.get("/login", async (req, res) => {
 	res.render("auth/login");

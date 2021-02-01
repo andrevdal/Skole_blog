@@ -15,21 +15,23 @@ const config = JSON.parse(
 const { sha256 } = require("../utils/common.js");
 
 const { User } = require("../models/users.js");
+const { Blog } = require("../models/blogs.js");
 
 const router = express.Router();
-function restrict(req, res, next) {
-	// Gather the jwt access token from the cookie
-	const authCookie = req.cookies["token"];
-	const token = authCookie && authCookie.split(" ")[1];
-	// If there isn't any token
-	if (token == null) return res.sendStatus(401);
-
-	jwt.verify(token, config.secret, (err, user) => {
-		if (err) return next(err);
-		req.user = user;
-		// Pass the execution off to whatever request the client intended
-		next();
-	});
+async function restrict(req, res, next) {
+	let user;
+	const { type, data } = await decodeAuth(
+		req.headers["authorization"] || req.cookies["authorization"]
+	);
+	// If the request comes from a user
+	if (type === "Basic") {
+		user = await User.findOne(data).exec();
+	} // If a request comes from a bot
+	else if (type === "Bearer") {
+		if (data) user = await User.findOne(data.user);
+	}
+	req.user = user;
+	if (user) return next();
 }
 async function decodeAuth(authHeader) {
 	let [type, data] = authHeader.split(" ");
@@ -50,8 +52,10 @@ async function decodeAuth(authHeader) {
 		}
 	}
 }
-mongoose.connect("mongodb://localhost/users", { useNewUrlParser: true });
 
+mongoose.connect("mongodb://localhost/blog", { useNewUrlParser: true });
+
+// Authentification
 router.get("/login", async (req, res, next) => {
 	let user;
 	const expiresIn = 60 * 60;
@@ -126,5 +130,33 @@ router.post("/register", async (req, res, next) => {
 });
 
 router.get("/users", async (req, res) => res.jsonp(await User.find()));
+
+// Blogs
+
+// Save a new blog
+router.post("/blogs/new", restrict, async (req, res, next) => {
+	if (await Blog.findOne({ short_name: req.body.short_name }))
+		return next(createError(409, "Blog already exists with this name"));
+	else {
+		const blog = new Blog({
+			name: req.body.name,
+			short_name: req.body.short_name,
+			description: req.body.description,
+			author: req.user.id,
+		});
+		try {
+			await blog.save();
+			res.status(200).jsonp({ blog, message: "Blog saved succesfully" });
+		} catch (err) {
+			res.status(500).jsonp({ err, blog });
+		}
+	}
+});
+
+router.get("/blogs", async (req, res, next) => {
+	const blog = await Blog.findOne({ short_name: req.query.name });
+	if (blog) res.status(200).jsonp(blog);
+	else return next(createError(404, "Blog not found"));
+});
 
 module.exports = router;

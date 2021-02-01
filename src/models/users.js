@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const FlakeId = require("flakeid"); /* on node js only */
+const FlakeId = require("flakeid");
 
 //initiate flake
 const flake = new FlakeId({
