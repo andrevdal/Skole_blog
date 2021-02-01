@@ -1,0 +1,17 @@
+body{
+    margin: 0%;
+}
+.logo {
+	width: 20%;
+	display: inline-block;
+	margin-top: 1%;
+    margin: auto;
+    text-align: center;
+    position: fixed;
+}
+.feed{
+    background-color: red;
+    width: 50%;
+    margin: auto;
+    height: 100%;
+}

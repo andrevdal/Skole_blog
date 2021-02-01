@@ -1,0 +1,39 @@
+body {
+	background-image: url(/cdn/assets/day.jpg);
+}
+
+.loginBorder {
+	background-color: #aedbf0;
+	box-shadow: 7px 7px 10px #353333;
+}
+
+.x img:hover {
+	background-color: #86c0db;
+}
+
+
+.username,
+.retypePassword,
+.password {
+	background-color: white;
+	color: #0e0e0e;
+}
+
+
+.loginButton button {
+	background-color: white;
+}
+
+.loginButton button:hover {
+	background-color: #86c0db;
+	color: white;
+}
+
+
+a.register {
+	color: rgb(32, 59, 179);
+}
+
+a.register:hover {
+	color: rgb(145, 79, 206);
+}

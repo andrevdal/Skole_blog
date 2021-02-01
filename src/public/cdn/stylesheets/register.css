@@ -1,15 +1,18 @@
 body {
-	background-image: url(/cdn/assets/day.jpg);
 	background-size: cover;
-	color: white;
 	text-align: center;
+}
+
+.toggleWrapper{
+ text-align: left;
+ margin-top: -46vh;
+ margin-left: -45vw;
+ 
 }
 
 .loginBorder {
 	display: inline-block;
-	background-color: #aedbf0;
 	width: 20%;
-	box-shadow: 7px 7px 10px #353333;
 	margin-top: 2vh;
 	font-size: 1vw;
 }
@@ -43,7 +46,6 @@ body {
 }
 
 .x img:hover {
-	background-color: #86c0db;
 	border-radius: 50%;
 	transition-duration: 0.1s;
 	cursor: pointer;
@@ -52,7 +54,6 @@ body {
 .instructions {
 	text-align: center;
 	margin-right: 8%;
-	margin-left: 8%;
 	display: block;
 	font-size: 2.5vw;
 	margin-bottom: 3%;
@@ -67,8 +68,6 @@ body {
 	font-size: 0.75vw;
 	border: none;
 	margin: auto auto 1% auto;
-	background-color: white;
-	color: #0e0e0e;
 }
 
 .loginButton {
@@ -78,18 +77,15 @@ body {
 }
 
 .loginButton button {
-	background-color: white;
 	font-size: 1vw;
 	display: inline-block;
 	border: none;
 	padding: 1.5%;
-	width: 8vw;
+	width: 7vw;
 	border-radius: 20vh;
 }
 
 .loginButton button:hover {
-	background-color: #86c0db;
-	color: white;
 	transition-duration: 0.25s;
 	cursor: pointer;
 }
@@ -108,4 +104,12 @@ body {
 	display: inline-block;
 	margin-top: 1%;
 	margin-left: 7%;
+}
+
+a.register {
+	text-decoration: none;
+}
+
+a.register:hover {
+	cursor: pointer;
 }

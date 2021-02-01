@@ -1,51 +1,48 @@
 body {
 	background-image: url(/cdn/assets/night.jpg);
-	background-size: cover;
-	text-align: center;
 }
 
 .loginBorder {
-	display: inline-block;
-	background-color: #2e3c63;
-	width: 20%;
+	background-color: #262d41;
 	box-shadow: 7px 7px 10px #0a0a0a;
-	margin-top: 2vh;
-	font-size: 1vw;
 }
 
 .x img:hover {
-	background-color: #151d35;
-	border-radius: 50%;
-	transition-duration: 0.1s;
-	cursor: pointer;
+	background-color: rgb(26, 33, 58);
 }
 
 .username,
 .retypePassword,
 .password {
-	display: block;
-	padding: 1.5%;
-	font-size: 0.75vw;
-	border: none;
-	margin: auto auto 1% auto;
-	background-color: rgb(156, 153, 153);
-	color: #0e0e0e;
+	background-color: #171a25;
+	color: white;
+}
+
+.instructions {
+	color: white;;
 }
 
 .loginButton button {
-	background-color: #2c3a66;
+	background-color: #171a25;
 	color: white;
-	font-size: 1vw;
-	display: inline-block;
-	border: none;
-	padding: 1.5%;
-	width: 7vw;
-	border-radius: 20vh;
 }
 
 .loginButton button:hover {
-	background-color: #506092;
-	color: rgb(29, 29, 29);
-	transition-duration: 0.25s;
-	cursor: pointer;
+	background-color: #ffffff;
+	color: #060C10;
+}
+div.logo img {
+	 filter: invert();
+ }
+
+ .loginFeedback {
+	color: white;
+}
+
+a.register {
+	color: rgb(144, 164, 219);
+}
+
+a.register:hover {
+	color: rgb(101, 52, 146);
 }
