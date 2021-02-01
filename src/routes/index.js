@@ -4,7 +4,7 @@ const { User } = require("../models/users.js");
 const { Blog } = require("../models/blogs.js");
 const router = express.Router();
 
-async function find(Schema, name, value, obj={}) {
+async function find(Schema, name, value, obj = {}) {
 	let foo;
 	if (isNaN(value)) {
 		obj[name] = value;
@@ -18,15 +18,17 @@ async function find(Schema, name, value, obj={}) {
 
 router.get("/:username", async (req, res, next) => {
 	let user = await find(User, "username", req.params.username);
-	if(user) res.render("profile", {user})
-	else return next(createError(404))
+	if (user) res.render("profile", { user });
+	else return next(createError(404));
 });
 
 router.get("/:username/:blog", async (req, res, next) => {
 	let user = await find(User, "username", req.params.username),
-		blog = await find(Blog, "short_name", req.params.blog, {author: user?._id});
-	if(user && blog) res.render("blog", {user, blog})
-	else return next(createError(404))
+		blog = await find(Blog, "short_name", req.params.blog, {
+			author: user?._id,
+		});
+	if (user && blog) res.render("blog", { user, blog });
+	else return next(createError(404));
 });
 
 module.exports = router;
