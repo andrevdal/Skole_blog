@@ -2,6 +2,9 @@ const express = require("express");
 const createError = require("http-errors");
 const { User } = require("../models/users.js");
 const { Blog } = require("../models/blogs.js");
+const marked = require("marked");
+const insane = require("insane");
+
 const router = express.Router();
 
 async function find(Schema, name, value, obj = {}) {
@@ -27,7 +30,7 @@ router.get("/:username/:blog", async (req, res, next) => {
 		blog = await find(Blog, "short_name", req.params.blog, {
 			author: user?._id,
 		});
-	if (user && blog) res.render("blog", { user, blog });
+	if (user && blog) res.render("blog", { user, blog, marked, insane });
 	else return next(createError(404));
 });
 

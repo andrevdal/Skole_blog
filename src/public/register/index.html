@@ -10,9 +10,20 @@
 			integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
 			crossorigin="anonymous"
 		/>
+		<link
+		rel="stylesheet"
+		href="/cdn/stylesheets/light.css"
+		id="themeCSS"
+	/>
 	</head>
 
 	<body>
+		<nav>
+			<label class="switch">
+				<input type="checkbox" id="dn" />
+				<span class="slider round" id="slider"></span>
+			</label>
+		</nav>
 		<div class="logo">
 			<img src="/cdn/assets/assbook.svg" />
 		</div>
@@ -43,12 +54,13 @@
 					<div class="loginButton">
 						<button type="submit">Register new account</button>
 					</div>
-					<a href="/auth/login?login=true" class="register"
+					<a href="/login?login=true" class="register"
 						>Already have an account? Login</a
 					>
 				</form>
 			</div>
 		</div>
 		<script type="module" src="/cdn/scripts/auth/register.js"></script>
+		<script type="module" src="/cdn/scripts/main.js"></script>
 	</body>
 </html>

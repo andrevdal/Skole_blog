@@ -16,6 +16,7 @@ const blogSchema = new mongoose.Schema({
 	short_name: {
 		type: String,
 		required: true,
+		unique: true,
 	},
 	name: {
 		type: String,

@@ -31,7 +31,7 @@ const retypePassword = document.querySelector(".retypePassword");
 const loginButton = document.querySelector(".loginButtonMain");
 
 loginButton.addEventListener("click", () => {
-	window.location.href = "/auth/login";
+	window.location.href = "/login";
 });
 loginExit.addEventListener("click", () => {
 	loginBox.style.display = "none";
@@ -66,7 +66,7 @@ login.addEventListener("submit", (e) => {
 								loginFeedback.innerHTML = obj.message;
 								if (res.ok) {
 									window.location.href =
-										"/auth/login?login=true";
+										"/login?login=true";
 								} else {
 									loginFeedback.classList.add("error");
 									setCookie(

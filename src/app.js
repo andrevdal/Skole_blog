@@ -4,7 +4,7 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
-
+const mongoose = require("mongoose");
 // Routers
 const indexRouter = require("./routes/index");
 const apiRouter = require("./routes/api");
@@ -21,7 +21,14 @@ function parseError(req, res, err) {
 	res.status(err.status).jsonp({ error: err });
 }
 
-if (debug) app.use(express.static(path.join(__dirname, "public")));
+// Config mongoose
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
+mongoose.set("useUnifiedTopology", true);
+mongoose.connect("mongodb://localhost/blog", { useNewUrlParser: true });
+
+app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -30,8 +37,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(config.secret));
 
-app.use("/", indexRouter);
 app.use("/api", apiRouter);
+app.use("/", indexRouter);
 app.use((_req, _res, next) => next(createError(404)));
 
 app.use((err, req, res, _next) => {

@@ -1,9 +1,10 @@
 ## What is this?
 
 A blog website. The goals of this project are
-[x] Login system  
-[x] Mongodb for saving  
-[ ] Look pretty
+
+-   [x] Login system
+-   [x] Mongodb for saving
+-   [ ] Look pretty
 
 ## Usage
 
@@ -45,13 +46,12 @@ If you wish to host your own instance it's best to optimise a couple of stuff.
 
     	server_name www.blog.com;
 
-    	location /api {
-    		proxy_pass http://localhost:5000/api;
+    	location / {
+    		proxy_pass http://localhost:5000;
     	}
 
-    	location / {
+    	location ~ \.(gif|jpg|png|css|js|html|svg)$ {
     		root "/path/to/blog/src/public";
-    		autoindex on;
     	}
 
     	listen [::]:443 ssl; # managed by Certbot
@@ -63,9 +63,9 @@ If you wish to host your own instance it's best to optimise a couple of stuff.
 
     }
     server {
-    if ($host = www.blog.com) {
+    	if ($host = www.blog.com) {
     		return 301 https://$host$request_uri;
-    } # managed by Certbot
+    	} # managed by Certbot
 
     	server_name www.blog.com;
 

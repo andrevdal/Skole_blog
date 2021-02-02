@@ -1,6 +1,5 @@
 const createError = require("http-errors");
 const express = require("express");
-const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
@@ -41,6 +40,10 @@ async function restrict(req, res, next) {
 	}
 	req.user = user;
 	if (user) return next();
+	else
+		res.status(403).jsonp({
+			message: "No user found",
+		});
 }
 async function decodeAuth(auth) {
 	let [type, data] = auth.split(" ");
@@ -61,8 +64,6 @@ async function decodeAuth(auth) {
 		}
 	}
 }
-
-mongoose.connect("mongodb://localhost/blog", { useNewUrlParser: true });
 
 // Authentification
 router.get("/login", async (req, res, next) => {
@@ -160,12 +161,14 @@ router.post("/blogs/new", restrict, async (req, res, next) => {
 			name: req.body.name,
 			short_name: req.body.short_name,
 			description: req.body.description,
-			author: req.user.id,
+			data: req.body.data,
+			author: req.user._id,
 		});
 		try {
 			await blog.save();
 			res.status(200).jsonp({ blog, message: "Blog saved succesfully" });
 		} catch (err) {
+			console.log(err);
 			res.status(500).jsonp({ err, blog });
 		}
 	}
