@@ -219,8 +219,8 @@ router.get("/blogs/:user?/:id?", async (req, res, next) => {
 			else return next(createError(404, "Blog not found"));
 		} else {
 			blog = await find(Blog, "author", user?._id);
-			if(blog) res.status(200).jsonp(blog);
-			else return next(createError(404, "No blogs from this user found"))
+			if (blog) res.status(200).jsonp(blog);
+			else return next(createError(404, "No blogs from this user found"));
 		}
 	} else {
 		res.status(200).jsonp(await Blog.find());

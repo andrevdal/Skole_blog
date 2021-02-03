@@ -73,6 +73,8 @@ If you wish to host your own instance it's best to optimise a couple of stuff.
     	listen [::]:80;
     	return 404; # managed by Certbot
     }
+    ```
+
 ```
 
 2. `npm start` for self hosting and not developer mode
