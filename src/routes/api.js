@@ -235,7 +235,7 @@ router.delete("/blogs/:username?/:id", restrict, async (req, res, next) => {
 				try {
 					res.status(204).jsonp({
 						message: "Blog succesfully deleted",
-						user: await Blog.findOneAndDelete(blog),
+						user: await Blog.findByIdAndDelete(blog?._id),
 					});
 				} catch (err) {
 					res.status(304).jsonp({
