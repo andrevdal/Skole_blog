@@ -12,6 +12,7 @@ const config = JSON.parse(
 );
 
 const { sha256 } = require("../utils/common.js");
+const { find } = require("../utils/server");
 
 const { User } = require("../models/users.js");
 const { Blog } = require("../models/blogs.js");
@@ -41,7 +42,7 @@ async function restrict(req, res, next) {
 	req.user = user;
 	if (user) return next();
 	else
-		res.status(403).jsonp({
+		res.status(401).jsonp({
 			message: "No user found",
 		});
 }
@@ -142,18 +143,53 @@ router.post("/register", async (req, res, next) => {
 
 router.get("/users/:username?", async (req, res) => {
 	if (req.params.username) {
-		const user = await User.findOne({ username: req.params.username });
+		const user = await find(User, "username", req.params.username);
 		if (user) res.status(200).jsonp(user);
-		else res.status(404).jsonp({ message: "User not found" });
+		else next(createError(404, "User not found"));
 	} else return res.status(200).jsonp(await User.find());
+});
+
+router.delete("/users/:username?", restrict, async (req, res, next) => {
+	if (req.params.username) {
+		if (req.user.admin) {
+			const user = await find(User, "username", req.params.username);
+			try {
+				res.status(204).jsonp({
+					message: "User succesfully deleted",
+					user: await User.findOneAndDelete(user),
+				});
+			} catch (err) {
+				res.status(304).jsonp({
+					message: "The user hasn't been deleted",
+					err,
+				});
+			}
+		} else next(createError(404, "No user provided"));
+	} else return next(createError(404, "No user provided"));
 });
 
 router.get("/user", restrict, (req, res) => res.jsonp(req.user));
 
+router.delete("/user", restrict, async (req, res, next) => {
+	//req.user.hash = await sha256(req.body.hash);
+	try {
+		res.status(200).jsonp({
+			message: "User succesfully deleted",
+			user: await User.findByIdAndDelete(req.user._id),
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(304).jsonp({
+			message: "The user hasn't been deleted",
+			err,
+		});
+	}
+});
+
 // Blogs
 
 // Save a new blog
-router.post("/blogs/new", restrict, async (req, res, next) => {
+router.post("/blogs", restrict, async (req, res, next) => {
 	if (await Blog.findOne({ short_name: req.body.short_name }))
 		return next(createError(409, "Blog already exists with this name"));
 	else {
@@ -168,7 +204,6 @@ router.post("/blogs/new", restrict, async (req, res, next) => {
 			await blog.save();
 			res.status(200).jsonp({ blog, message: "Blog saved succesfully" });
 		} catch (err) {
-			console.log(err);
 			res.status(500).jsonp({ err, blog });
 		}
 	}
@@ -176,33 +211,41 @@ router.post("/blogs/new", restrict, async (req, res, next) => {
 
 router.get("/blogs/:user?/:id?", async (req, res, next) => {
 	if (req.params.user) {
-		let author_id;
-		if (isNaN(req.params.user)) {
-			const user = await User.findOne({ username: req.params.user });
-			author_id = user.id;
-		} else {
-			author_id = req.params.user;
-		}
+		const user = await find(User, "username", req.params.user);
+		let blog;
 		if (req.params.id) {
-			if (isNaN(req.params.id)) {
-				const blog = await Blog.findOne({
-					short_name: req.params.id,
-					author: author_id,
-				});
-				if (blog) res.status(200).jsonp(blog);
-				else return next(createError(404, "Blog not found"));
-			} else {
-				const blog = await Blog.findOne({
-					_id: req.params.id,
-					author: author_id,
-				});
-				if (blog) res.status(200).jsonp(blog);
-				else return next(createError(404, "Blog not found"));
-			}
-		} else res.status(200).jsonp(await Blog.find({ author: author_id }));
+			blog = await find(Blog, "short_name", req.params.id);
+			if (blog) res.status(200).jsonp(blog);
+			else return next(createError(404, "Blog not found"));
+		} else {
+			blog = await find(Blog, "author", user?._id);
+			if(blog) res.status(200).jsonp(blog);
+			else return next(createError(404, "No blogs from this user found"))
+		}
 	} else {
 		res.status(200).jsonp(await Blog.find());
 	}
+});
+
+router.delete("/blogs/:username?/:id", restrict, async (req, res, next) => {
+	if (req.params.username) {
+		const blog = await find(Blog, "short_name", req.params.id);
+		if (blog) {
+			if (req.user.admin || req.user._id === blog.author) {
+				try {
+					res.status(204).jsonp({
+						message: "Blog succesfully deleted",
+						user: await Blog.findOneAndDelete(blog),
+					});
+				} catch (err) {
+					res.status(304).jsonp({
+						message: "The blog hasn't been deleted",
+						err,
+					});
+				}
+			} else return next(createError(403, "Not allowed"));
+		} else return next(createError(404, "Blog not found"));
+	} else return next(createError(404, "No user provided"));
 });
 
 module.exports = router;

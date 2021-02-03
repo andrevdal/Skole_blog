@@ -65,8 +65,7 @@ login.addEventListener("submit", (e) => {
 								const obj = await res.json();
 								loginFeedback.innerHTML = obj.message;
 								if (res.ok) {
-									window.location.href =
-										"/login?login=true";
+									window.location.href = "/login?login=true";
 								} else {
 									loginFeedback.classList.add("error");
 									setCookie(

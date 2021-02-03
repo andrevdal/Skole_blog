@@ -18,7 +18,7 @@ const config = JSON.parse(
 	fs.readFileSync(path.join(__dirname, "..", "confs", "config.json"), "utf-8")
 );
 function parseError(req, res, err) {
-	res.status(err.status).jsonp({ error: err });
+	res.status(err.status).jsonp({ message: err.message, err });
 }
 
 // Config mongoose
