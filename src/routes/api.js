@@ -1,6 +1,5 @@
 const createError = require("http-errors");
 const express = require("express");
-const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
@@ -13,26 +12,42 @@ const config = JSON.parse(
 );
 
 const { sha256 } = require("../utils/common.js");
+const { find } = require("../utils/server");
 
 const { User } = require("../models/users.js");
+const { Blog } = require("../models/blogs.js");
 
 const router = express.Router();
-function restrict(req, res, next) {
-	// Gather the jwt access token from the cookie
-	const authCookie = req.cookies["token"];
-	const token = authCookie && authCookie.split(" ")[1];
-	// If there isn't any token
-	if (token == null) return res.sendStatus(401);
-
-	jwt.verify(token, config.secret, (err, user) => {
-		if (err) return next(err);
-		req.user = user;
-		// Pass the execution off to whatever request the client intended
-		next();
-	});
+async function restrict(req, res, next) {
+	let user;
+	try {
+		var { type, data } = await decodeAuth(
+			req.headers["authorization"] || req.cookies["token"]
+		);
+	} catch (err) {
+		return res.status(401).jsonp({
+			message: "Unauthorized",
+			err,
+			something: req.headers["authorization"],
+			else: req.cookies["authorization"],
+		});
+	}
+	// If the request comes from a user
+	if (type === "Basic") {
+		user = await User.findOne(data).exec();
+	} // If a request comes from a bot
+	else if (type === "Bearer") {
+		if (data) user = await User.findOne(data.user);
+	}
+	req.user = user;
+	if (user) return next();
+	else
+		res.status(401).jsonp({
+			message: "No user found",
+		});
 }
-async function decodeAuth(authHeader) {
-	let [type, data] = authHeader.split(" ");
+async function decodeAuth(auth) {
+	let [type, data] = auth.split(" ");
 	if (type === "Basic") {
 		// Decrypt the message
 		let [username, hash] = Buffer.from(data, "base64")
@@ -50,8 +65,8 @@ async function decodeAuth(authHeader) {
 		}
 	}
 }
-mongoose.connect("mongodb://localhost/users", { useNewUrlParser: true });
 
+// Authentification
 router.get("/login", async (req, res, next) => {
 	let user;
 	const expiresIn = 60 * 60;
@@ -124,7 +139,113 @@ router.post("/register", async (req, res, next) => {
 		}
 	}
 });
+// Users
 
-router.get("/users", async (req, res) => res.jsonp(await User.find()));
+router.get("/users/:username?", async (req, res) => {
+	if (req.params.username) {
+		const user = await find(User, "username", req.params.username);
+		if (user) res.status(200).jsonp(user);
+		else next(createError(404, "User not found"));
+	} else return res.status(200).jsonp(await User.find());
+});
+
+router.delete("/users/:username?", restrict, async (req, res, next) => {
+	if (req.params.username) {
+		if (req.user.admin) {
+			const user = await find(User, "username", req.params.username);
+			try {
+				res.status(204).jsonp({
+					message: "User succesfully deleted",
+					user: await User.findOneAndDelete(user),
+				});
+			} catch (err) {
+				res.status(304).jsonp({
+					message: "The user hasn't been deleted",
+					err,
+				});
+			}
+		} else next(createError(404, "No user provided"));
+	} else return next(createError(404, "No user provided"));
+});
+
+router.get("/user", restrict, (req, res) => res.jsonp(req.user));
+
+router.delete("/user", restrict, async (req, res, next) => {
+	//req.user.hash = await sha256(req.body.hash);
+	try {
+		res.status(200).jsonp({
+			message: "User succesfully deleted",
+			user: await User.findByIdAndDelete(req.user._id),
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(304).jsonp({
+			message: "The user hasn't been deleted",
+			err,
+		});
+	}
+});
+
+// Blogs
+
+// Save a new blog
+router.post("/blogs", restrict, async (req, res, next) => {
+	if (await Blog.findOne({ short_name: req.body.short_name }))
+		return next(createError(409, "Blog already exists with this name"));
+	else {
+		const blog = new Blog({
+			name: req.body.name,
+			short_name: req.body.short_name,
+			description: req.body.description,
+			data: req.body.data,
+			author: req.user._id,
+		});
+		try {
+			await blog.save();
+			res.status(200).jsonp({ blog, message: "Blog saved succesfully" });
+		} catch (err) {
+			res.status(500).jsonp({ err, blog });
+		}
+	}
+});
+
+router.get("/blogs/:user?/:id?", async (req, res, next) => {
+	if (req.params.user) {
+		const user = await find(User, "username", req.params.user);
+		let blog;
+		if (req.params.id) {
+			blog = await find(Blog, "short_name", req.params.id);
+			if (blog) res.status(200).jsonp(blog);
+			else return next(createError(404, "Blog not found"));
+		} else {
+			blog = await find(Blog, "author", user?._id);
+			if(blog) res.status(200).jsonp(blog);
+			else return next(createError(404, "No blogs from this user found"))
+		}
+	} else {
+		res.status(200).jsonp(await Blog.find());
+	}
+});
+
+router.delete("/blogs/:username?/:id", restrict, async (req, res, next) => {
+	if (req.params.username) {
+		const blog = await find(Blog, "short_name", req.params.id);
+		if (blog) {
+			if (req.user.admin || req.user._id === blog.author) {
+				try {
+					res.status(204).jsonp({
+						message: "Blog succesfully deleted",
+						user: await Blog.findOneAndDelete(blog),
+					});
+				} catch (err) {
+					res.status(304).jsonp({
+						message: "The blog hasn't been deleted",
+						err,
+					});
+				}
+			} else return next(createError(403, "Not allowed"));
+		} else return next(createError(404, "Blog not found"));
+	} else return next(createError(404, "No user provided"));
+});
 
 module.exports = router;

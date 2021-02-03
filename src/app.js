@@ -4,10 +4,9 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
-
+const mongoose = require("mongoose");
 // Routers
 const indexRouter = require("./routes/index");
-const authRouter = require("./routes/auth");
 const apiRouter = require("./routes/api");
 
 const debug = process.env.NODE_ENV === "development";
@@ -19,20 +18,27 @@ const config = JSON.parse(
 	fs.readFileSync(path.join(__dirname, "..", "confs", "config.json"), "utf-8")
 );
 function parseError(req, res, err) {
-	res.status(err.status).jsonp({ error: err });
+	res.status(err.status).jsonp({ message: err.message, err });
 }
+
+// Config mongoose
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
+mongoose.set("useUnifiedTopology", true);
+mongoose.connect("mongodb://localhost/blog", { useNewUrlParser: true });
+
+app.use(express.static(path.join(__dirname, "public")));
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-if (debug) app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(config.secret));
 
-app.use("/", indexRouter);
-app.use("/auth", authRouter);
 app.use("/api", apiRouter);
+app.use("/", indexRouter);
 app.use((_req, _res, next) => next(createError(404)));
 
 app.use((err, req, res, _next) => {
