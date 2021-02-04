@@ -1,5 +1,5 @@
-# User object
-This taken straight from `src/models/users.js` minus some elements that are not returned by the REST API such as the hash. 
+# Blogs object
+This taken straight from `src/models/blogs.js`. 
 
 ```js
 id: {
