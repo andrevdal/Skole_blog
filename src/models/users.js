@@ -37,27 +37,21 @@ const userSchema = new mongoose.Schema({
 	},
 	external: {
 		twitter: {
-			url: {
-				type: String,
-			},
+			url: String,
 			show: {
 				type: Boolean,
 				default: true,
 			},
 		},
 		youtube: {
-			url: {
-				type: String,
-			},
+			url: String,
 			show: {
 				type: Boolean,
 				default: true,
 			},
 		},
 		twitch: {
-			url: {
-				type: String,
-			},
+			url: String,
 			show: {
 				type: Boolean,
 				default: true,
