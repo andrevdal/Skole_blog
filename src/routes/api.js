@@ -171,26 +171,57 @@ router.delete("/users/:username?", restrict, async (req, res, next) => {
 router.get("/user", restrict, (req, res) => res.jsonp(req.user));
 
 router.delete("/user", restrict, async (req, res, next) => {
-	//req.user.hash = await sha256(req.body.hash);
-	try {
-		res.status(200).jsonp({
-			message: "User succesfully deleted",
-			user: await User.findByIdAndDelete(req.user._id),
-		});
-	} catch (err) {
-		console.log(err);
-		res.status(304).jsonp({
-			message: "The user hasn't been deleted",
-			err,
-		});
-	}
+	const user = await User.findOne({
+		_id: req.user._id,
+		hash: await sha256(req.body.hash),
+	});
+	if (user) {
+		if (req.body.keep === true) {
+			const archive_user = await User.findOne({ username: "archive" });
+			try {
+				await Blog.updateMany(
+					{ author: user._id },
+					{ author: archive_user._id }
+				);
+				res.status(200).jsonp({
+					message: "User succesfully deleted",
+					user: await User.findByIdAndDelete(user._id),
+				});
+			} catch (err) {
+				console.log(err);
+				res.status(304).jsonp({
+					message: "The user hasn't been deleted",
+					err,
+				});
+			}
+		} else {
+			try {
+				await Blog.deleteMany({ author: user._id });
+				res.status(200).jsonp({
+					message: "User succesfully deleted",
+					user: await User.findByIdAndDelete(req.user._id),
+				});
+			} catch (err) {
+				console.log(err);
+				res.status(304).jsonp({
+					message: "The user hasn't been deleted",
+					err,
+				});
+			}
+		}
+	} else res.status(403).jsonp({ message: "Wrong password provided" });
 });
 
 // Blogs
 
 // Save a new blog
 router.post("/blogs", restrict, async (req, res, next) => {
-	if (await Blog.findOne({ short_name: req.body.short_name }))
+	if (
+		await Blog.findOne({
+			short_name: req.body.short_name,
+			author: req.user._id,
+		})
+	)
 		return next(createError(409, "Blog already exists with this name"));
 	else {
 		const blog = new Blog({
@@ -218,7 +249,7 @@ router.get("/blogs/:user?/:id?", async (req, res, next) => {
 			if (blog) res.status(200).jsonp(blog);
 			else return next(createError(404, "Blog not found"));
 		} else {
-			blog = await find(Blog, "author", user?._id);
+			blog = await Blog.find({ author: user?.id });
 			if (blog) res.status(200).jsonp(blog);
 			else return next(createError(404, "No blogs from this user found"));
 		}
@@ -247,5 +278,18 @@ router.delete("/blogs/:username?/:id", restrict, async (req, res, next) => {
 		} else return next(createError(404, "Blog not found"));
 	} else return next(createError(404, "No user provided"));
 });
+
+// Functions to run when the website starts up
+(async () => {
+	const user = new User({
+		username: "archive",
+		hash: await sha256(config.secret),
+	});
+	try {
+		await user.save();
+	} catch (err) {
+		console.log("Website is not running for the first time");
+	}
+})();
 
 module.exports = router;
