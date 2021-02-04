@@ -87,7 +87,7 @@ Returns the newly created blog.
 
 **Requires [authentification](../auth)**
 
-Deletes a user's blog. The owner of the blog can delete or an admin. 
+Deletes a user's blog. This endpoint is available to owners of the blog or a user with `admin: true`. 
 
 ```http
 DELETE /api/:user/:blog HTTP/2.0
