@@ -1,5 +1,6 @@
 # Blogs object
-This taken straight from `src/models/blogs.js`. 
+
+This taken straight from `src/models/blogs.js`.
 
 ```js
 id: {
@@ -36,7 +37,8 @@ author: {
 },
 ```
 
-For example: 
+For example:
+
 ```json
 {
 	"description": "Really scary",
@@ -54,14 +56,14 @@ For example:
 
 ### `GET /blogs/:user/:blog`
 
-All parameters are optional. 
-`blog` and `user` can be either IDs or usernames and short_name. 
+All parameters are optional.
+`blog` and `user` can be either IDs or usernames and short_name.
 
 ```http
 GET /api/blogs/:user/:blog HTTP/2.0
 ```
 
-If no user is provided then it will return all blogs. 
+If no user is provided then it will return all blogs.
 If no blog is provided then it will return all blogs that are written by that user.
 
 ### `POST /blogs`
@@ -69,7 +71,7 @@ If no blog is provided then it will return all blogs that are written by that us
 **Requires [authentification](../auth)**
 
 Only `name` is optional.
-`data` can be markdown formatted, and it will be displayed as such. 
+`data` can be markdown formatted, and it will be displayed as such.
 
 ```http
 POST /api/blogs HTTP/2.0
@@ -87,7 +89,7 @@ Returns the newly created blog.
 
 **Requires [authentification](../auth)**
 
-Deletes a user's blog. This endpoint is available to owners of the blog or a user with `admin: true`. 
+Deletes a user's blog. This endpoint is available to owners of the blog or a user with `admin: true`.
 
 ```http
 DELETE /api/:user/:blog HTTP/2.0

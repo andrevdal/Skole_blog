@@ -1,12 +1,14 @@
 ## Login
 
 ### Basic
+
 To authentificate you must submit a header that is a base64 encoded string of the username and sha256 hashed password. Such as
 
 Username: Luca  
-Password: hunter2  
+Password: hunter2
 
 String to encode: `luca:f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7`
+
 > **Warning!** Because of this the username may **NOT** include a colon (:).
 
 ```http

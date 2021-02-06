@@ -1,5 +1,6 @@
 # User object
-This taken straight from `src/models/users.js` minus some elements that are not returned by the REST API such as the hash. 
+
+This taken straight from `src/models/users.js` minus some elements that are not returned by the REST API such as the hash.
 
 ```js
 id: {
@@ -49,7 +50,8 @@ external: {
 },
 ```
 
-For example: 
+For example:
+
 ```json
 {
 	"external": {
@@ -81,14 +83,15 @@ For example:
 ```http
 GET /api/user HTTP/2.0
 ```
-Returns the logged in user. 
+
+Returns the logged in user.
 
 ### `DELETE /user`
 
 **Requires [authentification](../auth)**
 
-Must also provide a `hash` which is the user's password sha256 hashed. 
-An optional `keep` boolean may be provided if a user wishes for their blogs to be transfered to a user called `archive`. 
+Must also provide a `hash` which is the user's password sha256 hashed.
+An optional `keep` boolean may be provided if a user wishes for their blogs to be transfered to a user called `archive`.
 
 ```http
 DELETE /api/user HTTP/2.0
@@ -107,6 +110,7 @@ Content-Type: application/json
 ```http
 GET /api/users/ HTTP/2.0
 ```
+
 Returns an array of all users.
 
 ### `GET /users/:user`
@@ -116,4 +120,5 @@ User can be either a username or it can be an ID. So `/users/luca` and `/users/1
 ```http
 GET /api/users/:user HTTP/2.0
 ```
-Returns the user. 
+
+Returns the user.
