@@ -9,12 +9,11 @@ const { sha256 } = require("../src/utils/common");
  * @returns {Promise<any>} The server's response
  */
 async function register(username, password) {
-	hash = await sha256(password);
 	const res = await fetch(`${settings.base_url}/register`, {
 		method: "POST",
 		headers: {
 			Authorization: `Basic ${Buffer.from(
-				`${username}:${hash}`,
+				`${username}:${await sha256(password)}`,
 				"utf-8"
 			).toString("base64")}`,
 		},
@@ -31,11 +30,10 @@ async function register(username, password) {
  */
 async function login(...args) {
 	if (args.length != 1) {
-		hash = await sha256(args[1]);
 		const res = await fetch(`${settings.base_url}/login`, {
 			headers: {
 				Authorization: `Basic ${Buffer.from(
-					`${args[0]}:${hash}`,
+					`${args[0]}:${await sha256(args[1])}`,
 					"utf-8"
 				).toString("base64")}`,
 			},
@@ -70,7 +68,7 @@ async function get(user = null) {
  * @returns {Promise<any>} Returns the logged in user
  */
 async function client(...args) {
-	const login_res = await login(args);
+	const login_res = await login(args[0], args[1]);
 	const res = await fetch(`${settings.base_url}/user`, {
 		headers: {
 			Authorization: `Bearer ${login_res.token}`,
@@ -102,18 +100,47 @@ async function remove(username, password) {
 	return await res.json();
 }
 
+/**
+ * Update a user
+ * @param {String} username The account's username
+ * @param {String} password The account's password
+ * @param {Object} update What to update
+ * @returns {Promise<any>} The account, as it was before the update
+ */
+async function update(username, password, update) {
+	hash = await sha256(password);
+	const login_req = await login(username, password);
+	const token = login_req.token;
+	const res = await fetch(`${settings.base_url}/user`, {
+		method: "PATCH",
+		headers: {
+			Authorization: `Bearer ${token}`,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(update),
+	});
+	if (!res.ok) throw new Error(JSON.stringify(await res.json(), null, 4));
+	return await res.json();
+}
+
 if (require.main === module) {
 	(async (username, password) => {
 		console.log(await register(username, password));
 		console.log(await login(username, password));
 		console.log(await client(username, password));
+		console.log(
+			await update(username, password, { bio: "I've changed my bio!" })
+		);
 		console.log(await get(username));
 		console.log(await remove(username, password));
-	})("luca", "hunter2");
+	})("testUser", "password");
 }
 
 module.exports = {
 	register,
 	login,
+	client,
+	update,
+	get,
 	remove,
 };

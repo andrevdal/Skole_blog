@@ -5,8 +5,6 @@ const path = require("path");
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
-const swaggerJSDoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
 
 // Routers
 const apiRouter = require("./routes/api");
@@ -41,86 +39,6 @@ app.use(express.json());
 app.use(cookieParser(config.secret));
 
 app.use("/api", apiRouter);
-app.use(
-	"/docs",
-	swaggerUi.serve,
-	swaggerUi.setup(
-		swaggerJSDoc({
-			swaggerDefinition: {
-				openapi: "3.0.1",
-				info: {
-					title: "Assbook API",
-					version: "1.0.0",
-					description:
-						"This is a REST API for Assbook:tm:. It can retrieve information about users and blogs.",
-					license: {
-						name: "Unlicensed",
-						url: "https://unlicense.org/",
-					},
-					contact: {
-						name: "Someone",
-						url: "ughhhhh",
-					},
-				},
-				servers: [
-					{
-						url: `${debug ? "https" : "http"}://localhost:${
-							config.port
-						}`,
-						description: "Development server",
-					},
-					{
-						url: "https://test.aninternettroll.xyz/",
-						description: "Development server 2",
-					},
-				],
-			},
-			apis: [path.join(__dirname, "routes", "api.js")],
-			components: {
-				securitySchemes: {
-					basicAuth: {
-						type: "http",
-						scheme: "basic",
-					},
-					JWT: {
-						description: "",
-						type: "apiKey",
-						name: "Authorization",
-						in: "header",
-					},
-				},
-			},
-			security: {
-				basicAuth: [],
-				JWT: [],
-			},
-		}),
-		{
-			swaggerOptions: {
-				authAction: {
-					JWT: {
-						name: "JWT",
-						schema: {
-							type: "apiKey",
-							in: "header",
-							name: "Authorization",
-							description: "",
-						},
-						value: "Bearer <my own JWT token>",
-					},
-					basicAuth: {
-						name: "Authorization",
-						schema: {
-							type: "basic",
-							in: "header",
-						},
-						value: "Basic <user:password>",
-					},
-				},
-			},
-		}
-	)
-);
 app.use("/", indexRouter);
 app.use((_req, _res, next) => next(createError(404)));
 

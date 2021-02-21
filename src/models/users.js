@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	bio: {
+		type: String,
+		default: "No bio provided",
+	},
 	external: {
 		twitter: {
 			url: String,

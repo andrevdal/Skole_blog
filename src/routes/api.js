@@ -21,23 +21,25 @@ const router = express.Router();
 async function restrict(req, res, next) {
 	let user;
 	try {
-		var { type, data } = await decodeAuth(
+		var { type, data, err } = await decodeAuth(
 			req.headers["authorization"] || req.cookies["token"]
 		);
 	} catch (err) {
+		var err = err;
+	}
+	if (err)
 		return next(
 			createError(401, {
 				message: "Unauthorized",
 				err,
 			})
 		);
-	}
 	// If the request comes from a user
 	if (type === "Basic") {
-		user = await User.findOne(data).exec();
+		user = await User.findOne(data);
 	} // If a request comes from a bot
 	else if (type === "Bearer") {
-		if (data) user = await User.findOne(data.user);
+		if (data) user = await User.findById(data.user.id);
 	}
 	req.user = user;
 	if (user) return next();
@@ -57,8 +59,11 @@ async function decodeAuth(auth) {
 		return { type, data: { username, hash } };
 	} else if (type === "Bearer") {
 		try {
-			jwt.verify(data);
-			data = jwt.decode(data);
+			try {
+				data = jwt.decode(data, config.secret);
+			} catch (err) {
+				return { type, data, err };
+			}
 			return { type, data };
 		} catch (err) {
 			return { type, data, err };
@@ -67,50 +72,6 @@ async function decodeAuth(auth) {
 }
 
 // Authentification
-
-/**
- * @openapi
- * /api/login:
- *   get:
- *     summary: Login as a user.
- *     security:
- *       - basicAuth: []
- *       - JWT: []
- *     responses:
- *       200:
- *         description: Succesfull login
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: A message to be shown on screen
- *                   example: User Authentificated
- *                 expiresIn:
- *                   type: number
- *                   description: When the provided token expires in ms
- *                   example: 3600
- *                 token:
- *                   type: string
- *                   description: A token to be used from now on for authentification
- *                   example: sdnauiwhbfduiwehbfikewhuifkhn
- *       401:
- *         description: Bad login
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: A message to be shown on screen
- *                   example: Unauthorized
- *                 err:
- *                   type: object
- *                   example: {}
- */
 router.get("/login", async (req, res, next) => {
 	let user;
 	const expiresIn = 60 * 60;
@@ -150,96 +111,6 @@ router.get("/login", async (req, res, next) => {
 		});
 });
 
-/**
- * @openapi
- * /api/register:
- *   post:
- *     summary: Register a new user.
- *     security:
- *       - basicAuth: []
- *       - JWT: []
- *     responses:
- *       200:
- *         description: Succesfull register
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: A message to be shown on screen
- *                   example: User Saved
- *                 user:
- *                   type: object
- *                   description: The newly created user
- *                   properties:
- *                     external:
- *                       type: object
- *                       properties:
- *                         twitter:
- *                           type: object
- *                           properties:
- *                             show:
- *                               type: boolean
- *                         youtube:
- *                           type: object
- *                           properties:
- *                             show:
- *                               type: boolean
- *                         twitch:
- *                           type: object
- *                           properties:
- *                             show:
- *                               type: boolean
- *                         admin:
- *                           type: boolean
- *                         username:
- *                           type: string
- *                           example: luca
- *                         created_at:
- *                           type: string
- *                           example: 2021-02-04T07:47:58.780Z
- *                         id:
- *                           type: string
- *                           example: 12438958361452544
- *                 expiresIn:
- *                   type: number
- *                   description: When the provided token expires in ms
- *                   example: 3600
- *                 token:
- *                   type: string
- *                   description: A token to be used from now on for authentification
- *                   example: sdnauiwhbfduiwehbfikewhuifkhn
- *       400:
- *         description: Error when saving
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: A message to be shown on screen
- *                   example: User already exists
- *                 err:
- *                   type: object
- *                   example: "MongoError"
- *       401:
- *         description: Bad authentification
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: A message to be shown on screen
- *                   example: Unauthorized
- *                 err:
- *                   type: object
- *                   example: {}
- */
 router.post("/register", async (req, res, next) => {
 	// Decrypt the message
 	let user;
@@ -296,61 +167,6 @@ router.post("/register", async (req, res, next) => {
 	}
 });
 // Users
-
-/**
- * @openapi
- * /api/users/{user}:
- *   get:
- *     summary: Get user.
- *     parameters:
- *       - name: user
- *         in: path
- *         required: false
- *         description: The user you want. If no users are provided it will return all users. Either a user ID or a username.
- *         allowEmptyValue: true
- *         schema:
- *           type: string
- *           format: string
- *           max: 1
- *           nullable: true
- *     responses:
- *       200:
- *         description: Succesfull request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 external:
- *                   type: object
- *                   properties:
- *                     twitter:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     youtube:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     twitch:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     admin:
- *                       type: boolean
- *                     username:
- *                       type: string
- *                       example: luca
- *                     created_at:
- *                       type: string
- *                       example: 2021-02-04T07:47:58.780Z
- *                     id:
- *                       type: string
- *                       example: 12438958361452544
- */
 router.get("/users/:username?", async (req, res, next) => {
 	if (req.params.username) {
 		const user = await find(User, "username", req.params.username);
@@ -359,95 +175,6 @@ router.get("/users/:username?", async (req, res, next) => {
 	} else return res.status(200).jsonp(await User.find());
 });
 
-/**
- * @openapi
- * /api/users/{user}:
- *   delete:
- *     summary: Delete user. Requires admin permissions.
- *     security:
- *       - basicAuth: []
- *       - JWT: []
- *     parameters:
- *       - name: user
- *         in: path
- *         required: true
- *         description: The user you want. Either a user ID or a username.
- *         schema:
- *           type: string
- *           format: string
- *           max: 1
- *     responses:
- *       204:
- *         description: Succesfully deleted. Returns the deleted user.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 external:
- *                   type: object
- *                   properties:
- *                     twitter:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     youtube:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     twitch:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     admin:
- *                       type: boolean
- *                     username:
- *                       type: string
- *                       example: luca
- *                     created_at:
- *                       type: string
- *                       example: 2021-02-04T07:47:58.780Z
- *                     id:
- *                       type: string
- *                       example: 12438958361452544
- *       304:
- *         description: Something went wrong
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: The user hasn't been deleted
- *       404:
- *         description: No user found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: User not found
- *       401:
- *         description: Bad authentification
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: A message to be shown on screen
- *                   example: Unauthorized
- *                 err:
- *                   type: object
- *                   example: {}
- */
 router.delete("/users/:username?", restrict, async (req, res, next) => {
 	if (req.params.username) {
 		if (req.user.admin) {
@@ -467,134 +194,28 @@ router.delete("/users/:username?", restrict, async (req, res, next) => {
 	} else return next(createError(404, "No user provided"));
 });
 
-/**
- * @openapi
- * /api/user:
- *   get:
- *     summary: Get authentificated user.
- *     security:
- *       - basicAuth: []
- *       - JWT: []
- *     responses:
- *       200:
- *         description: Succesfull request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 external:
- *                   type: object
- *                   properties:
- *                     twitter:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     youtube:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     twitch:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     admin:
- *                       type: boolean
- *                     username:
- *                       type: string
- *                       example: luca
- *                     created_at:
- *                       type: string
- *                       example: 2021-02-04T07:47:58.780Z
- *                     id:
- *                       type: string
- *                       example: 12438958361452544
- */
+router.patch("/users/:user", restrict, async (req, res, next) => {
+	const user = await find(User, "username", req.params.user);
+	if (req.user.id !== user.id || req.user.admin)
+		return next(createError(403, "Not allowed"));
+	const update = req.body;
+	if (update.hash) {
+		if ((await sha256(update.hash)) === user.hash)
+			update.hash = await sha256(update.hash);
+		else return next(createError(403, "Wrong password"));
+	}
+	try {
+		res.jsonp({
+			user: await User.findByIdAndUpdate(user.id, update),
+		});
+	} catch (err) {
+		console.log(err);
+		return next(err);
+	}
+});
+
 router.get("/user", restrict, (req, res) => res.jsonp(req.user));
 
-/**
- * @openapi
- * /api/user:
- *   delete:
- *     summary: Delete user. 
- *     security:
- *       - basicAuth: []
- *       - JWT: []
- *     responses:
- *       204:
- *         description: Succesfully deleted. Returns the deleted user.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 external:
- *                   type: object
- *                   properties:
- *                     twitter:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     youtube:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     twitch:
- *                       type: object
- *                       properties:
- *                         show:
- *                           type: boolean
- *                     admin:
- *                       type: boolean
- *                     username:
- *                       type: string
- *                       example: luca
- *                     created_at:
- *                       type: string
- *                       example: 2021-02-04T07:47:58.780Z
- *                     id:
- *                       type: string
- *                       example: 12438958361452544
- *       304:
- *         description: Something went wrong
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: The user hasn't been deleted
- *       404:
- *         description: No user found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: User not found
- *       401:
- *         description: Bad authentification
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: A message to be shown on screen
- *                   example: Unauthorized
- *                 err:
- *                   type: object
- *                   example: {}
- */
 router.delete("/user", restrict, async (req, res, next) => {
 	const user = await User.findOne({
 		_id: req.user._id,
@@ -637,72 +258,24 @@ router.delete("/user", restrict, async (req, res, next) => {
 	} else res.status(403).jsonp({ message: "Wrong password provided" });
 });
 
-// Blogs
+router.patch("/user", restrict, async (req, res, next) => {
+	const update = req.body;
+	if (update.hash) {
+		if ((await sha256(update.hash)) === req.user.hash)
+			update.hash = await sha256(update.hash);
+		else return next(createError(403, "Wrong password"));
+	}
+	try {
+		res.jsonp({
+			user: await User.findByIdAndUpdate(req.user.id, update),
+		});
+	} catch (err) {
+		console.log(err);
+		return next(err);
+	}
+});
 
-/**
- * @openapi
- * /api/blogs:
- *   post:
- *     summary: Upload a new blog
- *     security:
- *       - basicAuth: []
- *       - JWT: []
- *     consumes:
- *       - application/json
- *     parameters:
- *       - in: body
- *         name: blog
- *         description: The blog to create.
- *         schema:
- *           type: object
- *           required:
- *             - name
- *           properties:
- *             name:
- *               type: string
- *             short_name:
- *               type: string
- *             description:
- *               type: string
- *             data:
- *               type: string
- *     responses:
- *       200:
- *         description: Blog saved
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 description:
- *                   type: string
- *                   example: Really scary
- *                 data:
- *                   type: string
- *                   example: "## Hello world!"
- *                 name:
- *                   type: string
- *                   example: Virus.exe
- *                 short_name:
- *                   type: string
- *                   example: virus
- *                 author:
- *                   type: string
- *                   example: 12438958361452544
- *                 id:
- *                   type: string
- *                   example: 12486445617029120
- *       409:
- *         description: Blog already exists
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Blog already exists with this name
- */
+// Blogs
 router.post("/blogs", restrict, async (req, res, next) => {
 	if (
 		await Blog.findOne({
@@ -728,75 +301,15 @@ router.post("/blogs", restrict, async (req, res, next) => {
 	}
 });
 
-/**
- * @openapi
- * /api/blogs/{user}/{blog}:
- *   get:
- *     summary: Get blog
- *     parameters:
- *       - name: user
- *         in: path
- *         required: false
- *         description: The user you want. If no users and blogs are provided it will return all blogs in form of an array. Either a user ID or a username.
- *         allowEmptyValue: true
- *         schema:
- *           type: string
- *           format: string
- *           max: 1
- *           nullable: true
- *       - name: blog
- *         in: path
- *         required: false
- *         description: The blog you want. If not provided it will return all blogs in form of an array from this user. Either a blog ID or a blog's short_name.
- *         allowEmptyValue: true
- *         schema:
- *           type: string
- *           format: string
- *           max: 1
- *           nullable: true
- *     responses:
- *       200:
- *         description: Succesfull request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 description:
- *                   type: string
- *                   example: Really scary
- *                 data:
- *                   type: string
- *                   example: "## Hello world!"
- *                 name:
- *                   type: string
- *                   example: Virus.exe
- *                 short_name:
- *                   type: string
- *                   example: virus
- *                 author:
- *                   type: string
- *                   example: 12438958361452544
- *                 id:
- *                   type: string
- *                   example: 12486445617029120
- *       404:
- *         description: No blog found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: User/Blog not found
- */
 router.get("/blogs/:user?/:id?", async (req, res, next) => {
 	if (req.params.user) {
 		const user = await find(User, "username", req.params.user);
+		if (!user) return next(createError(404, "User not found"));
 		let blog;
 		if (req.params.id) {
-			blog = await find(Blog, "short_name", req.params.id);
+			blog = await find(Blog, "short_name", req.params.id, {
+				author: user._id,
+			});
 			if (blog) res.status(200).jsonp(blog);
 			else return next(createError(404, "Blog not found"));
 		} else {
@@ -809,85 +322,12 @@ router.get("/blogs/:user?/:id?", async (req, res, next) => {
 	}
 });
 
-/**
- * @openapi
- * /api/blogs/{user}/{blog}:
- *   delete:
- *     summary: Delete a blog. Available to owners or admins.
- *     security:
- *       - basicAuth: []
- *       - JWT: []
- *     parameters:
- *       - name: user
- *         in: path
- *         required: true
- *         description: The user you want. Either a user ID or a username.
- *         schema:
- *           type: string
- *           format: string
- *           max: 1
- *       - name: blog
- *         in: path
- *         required: true
- *         description: The blog you want. Either a blog ID or a blog's short_name.
- *         schema:
- *           type: string
- *           format: string
- *           max: 1
- *     responses:
- *       204:
- *         description: Succesfully deleted. Returns the deleted blog.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 description:
- *                   type: string
- *                   example: Really scary
- *                 data:
- *                   type: string
- *                   example: "## Hello world!"
- *                 name:
- *                   type: string
- *                   example: Virus.exe
- *                 short_name:
- *                   type: string
- *                   example: virus
- *                 author:
- *                   type: string
- *                   example: 12438958361452544
- *                 id:
- *                   type: string
- *                   example: 12486445617029120
- *       404:
- *         description: No blog found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: User/Blog not found
- *       401:
- *         description: Bad authentification
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: A message to be shown on screen
- *                   example: Unauthorized
- *                 err:
- *                   type: object
- *                   example: {}
- */
 router.delete("/blogs/:username?/:id", restrict, async (req, res, next) => {
 	if (req.params.username) {
-		const blog = await find(Blog, "short_name", req.params.id);
+		const user = await find(User, "username", req.params.username);
+		const blog = await find(Blog, "short_name", req.params.id, {
+			author: user.id,
+		});
 		if (blog) {
 			if (req.user.admin || req.user._id === blog.author) {
 				try {
@@ -904,6 +344,22 @@ router.delete("/blogs/:username?/:id", restrict, async (req, res, next) => {
 			} else return next(createError(403, "Not allowed"));
 		} else return next(createError(404, "Blog not found"));
 	} else return next(createError(404, "No user provided"));
+});
+
+router.patch("/blogs/:user/:blog", restrict, async (req, res, next) => {
+	const user = await find(User, "username", req.params.user);
+	if (user.id !== req.user.id || req.user.admin)
+		return next(createError(403, "Not allowed"));
+	const blog = await find(Blog, "short_name", req.params.blog, {
+		author: user.id,
+	});
+	try {
+		res.jsonp({
+			blog: await Blog.findByIdAndUpdate(blog._id, req.body),
+		});
+	} catch (err) {
+		return next(createError(500, err));
+	}
 });
 
 // Functions to run when the website starts up
