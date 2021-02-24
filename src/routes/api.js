@@ -12,7 +12,7 @@ const config = JSON.parse(
 );
 
 const { sha256 } = require("../utils/common.js");
-const { find } = require("../utils/server");
+const { find, findAll } = require("../utils/server");
 
 const { User } = require("../models/users.js");
 const { Blog } = require("../models/blogs.js");
@@ -302,6 +302,11 @@ router.post("/blogs", restrict, async (req, res, next) => {
 });
 
 router.get("/blogs/:user?/:id?", async (req, res, next) => {
+	const embeds =
+		req.query.embed?.replaceAll(/\s/g, "").toLowerCase().split(",") || [];
+	let filter = "";
+	if (embeds.indexOf("data") === -1 && !req.params.id) filter += " -data";
+	const embedAuthor = embeds.indexOf("author") !== -1;
 	if (req.params.user) {
 		const user = await find(User, "username", req.params.user);
 		if (!user) return next(createError(404, "User not found"));
@@ -309,16 +314,20 @@ router.get("/blogs/:user?/:id?", async (req, res, next) => {
 		if (req.params.id) {
 			blog = await find(Blog, "short_name", req.params.id, {
 				author: user._id,
-			});
-			if (blog) res.status(200).jsonp(blog);
-			else return next(createError(404, "Blog not found"));
+			}, {filter, populate: embeds[embeds.indexOf("author")] || ""});
+			if (blog) {
+				res.status(200).jsonp(blog);
+			} else return next(createError(404, "Blog not found"));
 		} else {
-			blog = await Blog.find({ author: user?.id });
-			if (blog) res.status(200).jsonp(blog);
-			else return next(createError(404, "No blogs from this user found"));
+			blog = await findAll(Blog, null, undefined, undefined, {filter, populate: embeds[embeds.indexOf("author")] || ""})
+			if (blog) {
+				if (embedAuthor) blog.author = user;
+				res.status(200).jsonp(blog);
+			} else
+				return next(createError(404, "No blogs from this user found"));
 		}
 	} else {
-		res.status(200).jsonp(await Blog.find());
+		res.status(200).jsonp(await findAll(Blog, null, undefined, undefined, {filter, populate: embeds[embeds.indexOf("author")]}) || "");
 	}
 });
 
@@ -367,9 +376,22 @@ router.patch("/blogs/:user/:blog", restrict, async (req, res, next) => {
 	const user = new User({
 		username: "archive",
 		hash: await sha256(config.secret),
+		bio:
+			"A user to save deleted blogs. This account is automated and not a real human. ",
+	});
+	const blog = new Blog({
+		name: "What is this user?",
+		short_name: "readme",
+		description: "The purpose of this user revealed",
+		data: `# Who are you?
+This user is created automatically by the server. It's purpose is to archive blogs from users that want to delete their account but don't want to delete their blogs. 
+As a side note it's also used for testing. 
+`,
+		author: user._id,
 	});
 	try {
 		await user.save();
+		await blog.save();
 	} catch (err) {
 		console.log("Website is not running for the first time");
 	}

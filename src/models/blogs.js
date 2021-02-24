@@ -1,3 +1,4 @@
+const { User } = require("./users");
 const mongoose = require("mongoose");
 const FlakeId = require("flakeid");
 //initiate flake
@@ -39,6 +40,7 @@ const blogSchema = new mongoose.Schema({
 	author: {
 		type: String,
 		required: true,
+		ref: "user",
 	},
 });
 blogSchema.method("toJSON", function () {
