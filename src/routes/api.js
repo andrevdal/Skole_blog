@@ -306,28 +306,45 @@ router.get("/blogs/:user?/:id?", async (req, res, next) => {
 		req.query.embed?.replaceAll(/\s/g, "").toLowerCase().split(",") || [];
 	let filter = "";
 	if (embeds.indexOf("data") === -1 && !req.params.id) filter += " -data";
-	const embedAuthor = embeds.indexOf("author") !== -1;
 	if (req.params.user) {
 		const user = await find(User, "username", req.params.user);
 		if (!user) return next(createError(404, "User not found"));
 		let blog;
 		if (req.params.id) {
-			blog = await find(Blog, "short_name", req.params.id, {
-				author: user._id,
-			}, {filter, populate: embeds[embeds.indexOf("author")] || ""});
+			blog = await find(
+				Blog,
+				"short_name",
+				req.params.id,
+				{
+					author: user._id,
+				},
+				{ filter, populate: embeds[embeds.indexOf("author")] || "" }
+			);
 			if (blog) {
 				res.status(200).jsonp(blog);
 			} else return next(createError(404, "Blog not found"));
 		} else {
-			blog = await findAll(Blog, null, undefined, undefined, {filter, populate: embeds[embeds.indexOf("author")] || ""})
+			blog = await findAll(
+				Blog,
+				null,
+				undefined,
+				{
+					author: user._id,
+				},
+				{ filter, populate: embeds[embeds.indexOf("author")] || "" }
+			);
 			if (blog) {
-				if (embedAuthor) blog.author = user;
 				res.status(200).jsonp(blog);
 			} else
 				return next(createError(404, "No blogs from this user found"));
 		}
 	} else {
-		res.status(200).jsonp(await findAll(Blog, null, undefined, undefined, {filter, populate: embeds[embeds.indexOf("author")]}) || "");
+		res.status(200).jsonp(
+			(await findAll(Blog, null, undefined, undefined, {
+				filter,
+				populate: embeds[embeds.indexOf("author")],
+			})) || ""
+		);
 	}
 });
 
