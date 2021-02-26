@@ -59,9 +59,9 @@ For example:
 
 All parameters are optional.
 `blog` and `user` can be either IDs or usernames and short_name.
-You may embed `author` or `data`. 
-The `data` field is automatically embeded when both `user` and `blog` parameters are provided. 
-The `author` field, if embeded, will be a user object of the author, otherwise it will be a user ID. 
+You may embed `author` or `data`.
+The `data` field is automatically embeded when both `user` and `blog` parameters are provided.
+The `author` field, if embeded, will be a user object of the author, otherwise it will be a user ID.
 
 ```http
 GET /api/blogs/:user/:blog HTTP/2.0

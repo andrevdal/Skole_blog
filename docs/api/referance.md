@@ -9,7 +9,8 @@ Returns a JSONP response unless specified otherwise. To get a callback append `?
 > **Warning**, take this output as an unordered object. The order of those keys may change at any time!
 
 ### Embedding
-To embed a resource you must provide the http parameter `embed=` with a comma separeted list. For example: 
+
+To embed a resource you must provide the http parameter `embed=` with a comma separeted list. For example:
 
 ```http
 GET /api/blogs HTTP/2.0
@@ -60,7 +61,6 @@ GET /api/blogs?embed=author,data HTTP/2.0
 	}
 ]
 ```
-
 
 ### POSTing
 
