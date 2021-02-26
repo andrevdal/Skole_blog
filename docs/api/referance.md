@@ -8,6 +8,60 @@ Returns a JSONP response unless specified otherwise. To get a callback append `?
 
 > **Warning**, take this output as an unordered object. The order of those keys may change at any time!
 
+### Embedding
+To embed a resource you must provide the http parameter `embed=` with a comma separeted list. For example: 
+
+```http
+GET /api/blogs HTTP/2.0
+```
+
+```json
+[
+	{
+		"description": "The purpose of this user revealed",
+		"name": "What is this user?",
+		"short_name": "readme",
+		"author": "19165880630026240",
+		"id": "19165880650997760"
+	}
+]
+```
+
+```http
+GET /api/blogs?embed=author,data HTTP/2.0
+```
+
+```json
+[
+	{
+		"description": "The purpose of this user revealed",
+		"data": "# Who are you?\nThis user is created automatically by the server. It's purpose is to archive blogs from users that want to delete their account but don't want to delete their blogs. \nAs a side note it's also used for testing. \n",
+		"name": "What is this user?",
+		"short_name": "readme",
+		"author": {
+			"external": {
+				"twitter": {
+					"show": true
+				},
+				"youtube": {
+					"show": true
+				},
+				"twitch": {
+					"show": true
+				}
+			},
+			"admin": false,
+			"bio": "A user to save deleted blogs. This account is automated and not a real human. ",
+			"username": "archive",
+			"created_at": "2021-02-22T21:18:22.029Z",
+			"_id": "19165880630026240"
+		},
+		"id": "19165880650997760"
+	}
+]
+```
+
+
 ### POSTing
 
 While we do support form encoded HTTP bodies, JSON is the prefered choice.

@@ -34,6 +34,7 @@ data: {
 author: {
 	type: String,
 	required: true,
+	ref: "user",
 },
 ```
 
@@ -41,12 +42,12 @@ For example:
 
 ```json
 {
-	"description": "Really scary",
-	"data": "## Hello world! \n **I** __love__ *stuff*. <script>alert(1)</script>",
-	"name": "Virus.exe",
-	"short_name": "virus",
-	"author": "12438958361452544",
-	"id": "12486445617029120"
+	"description": "The purpose of this user revealed",
+	"data": "# Who are you?\nThis user is created automatically by the server. It's purpose is to archive blogs from users that want to delete their account but don't want to delete their blogs. \nAs a side note it's also used for testing. \n",
+	"name": "What is this user?",
+	"short_name": "readme",
+	"author": "19165880630026240",
+	"id": "19165880650997760"
 }
 ```
 
@@ -58,6 +59,9 @@ For example:
 
 All parameters are optional.
 `blog` and `user` can be either IDs or usernames and short_name.
+You may embed `author` or `data`. 
+The `data` field is automatically embeded when both `user` and `blog` parameters are provided. 
+The `author` field, if embeded, will be a user object of the author, otherwise it will be a user ID. 
 
 ```http
 GET /api/blogs/:user/:blog HTTP/2.0
