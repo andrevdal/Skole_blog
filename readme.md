@@ -2,9 +2,9 @@
 
 A blog website. The goals of this project are
 
-- [x] Login system
-- [x] Mongodb for saving
-- [ ] Look pretty
+-   [x] Login system
+-   [x] Mongodb for saving
+-   [ ] Look pretty
 
 ## Usage
 
@@ -41,39 +41,39 @@ If you wish to host your own instance it's best to optimise a couple of stuff.
 
 1. Set up NGINX to serve static files. For example (using certbot):
 
-	```nginx
-	server {
+    ```nginx
+    server {
 
-		server_name www.blog.com;
+    	server_name www.blog.com;
 
-		location / {
-			proxy_pass http://localhost:5000;
-		}
+    	location / {
+    		proxy_pass http://localhost:5000;
+    	}
 
-		location ~ \.(gif|jpg|png|css|js|html|svg)$ {
-			root "/path/to/blog/src/public";
-		}
+    	location ~ \.(gif|jpg|png|css|js|html|svg)$ {
+    		root "/path/to/blog/src/public";
+    	}
 
-		listen [::]:443 ssl; # managed by Certbot
-		listen 443 ssl; # managed by Certbot
-		ssl_certificate /etc/letsencrypt/live/www.blog.com/fullchain.pem; # managed by Certbot
-		ssl_certificate_key /etc/letsencrypt/live/www.blog.com/privkey.pem; # managed by Certbot
-		include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-		ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+    	listen [::]:443 ssl; # managed by Certbot
+    	listen 443 ssl; # managed by Certbot
+    	ssl_certificate /etc/letsencrypt/live/www.blog.com/fullchain.pem; # managed by Certbot
+    	ssl_certificate_key /etc/letsencrypt/live/www.blog.com/privkey.pem; # managed by Certbot
+    	include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
-	}
-	server {
-		if ($host = www.blog.com) {
-			return 301 https://$host$request_uri;
-		} # managed by Certbot
+    }
+    server {
+    	if ($host = www.blog.com) {
+    		return 301 https://$host$request_uri;
+    	} # managed by Certbot
 
-		server_name www.blog.com;
+    	server_name www.blog.com;
 
-		listen 80;
-		listen [::]:80;
-		return 404; # managed by Certbot
-	}
-	```
+    	listen 80;
+    	listen [::]:80;
+    	return 404; # managed by Certbot
+    }
+    ```
 
 2. `npm start` for self hosting and not developer mode
 

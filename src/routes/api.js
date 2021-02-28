@@ -168,11 +168,26 @@ router.post("/register", async (req, res, next) => {
 });
 // Users
 router.get("/users/:username?", async (req, res, next) => {
+	let { offset, max, orderby: sort, direction } = req.query;
+	offset = parseInt(offset);
+	max = parseInt(max);
+	if (direction === "desc") direction = -1;
+	else direction = 1;
 	if (req.params.username) {
 		const user = await find(User, "username", req.params.username);
 		if (user) res.status(200).jsonp(user);
 		else next(createError(404, "User not found"));
-	} else return res.status(200).jsonp(await User.find());
+	} else
+		return (
+			res.status(200).jsonp(
+				await findAll(User, null, undefined, undefined, {
+					offset,
+					max,
+					sort,
+					direction,
+				})
+			) || ""
+		);
 });
 
 router.delete("/users/:username?", restrict, async (req, res, next) => {
@@ -304,6 +319,11 @@ router.post("/blogs", restrict, async (req, res, next) => {
 router.get("/blogs/:user?/:id?", async (req, res, next) => {
 	const embeds =
 		req.query.embed?.replaceAll(/\s/g, "").toLowerCase().split(",") || [];
+	let { offset, max, orderby: sort, direction } = req.query;
+	offset = parseInt(offset);
+	max = parseInt(max);
+	if (direction === "desc") direction = -1;
+	else direction = 1;
 	let filter = "";
 	if (embeds.indexOf("data") === -1 && !req.params.id) filter += " -data";
 	if (req.params.user) {
@@ -331,7 +351,14 @@ router.get("/blogs/:user?/:id?", async (req, res, next) => {
 				{
 					author: user._id,
 				},
-				{ filter, populate: embeds[embeds.indexOf("author")] || "" }
+				{
+					filter,
+					populate: embeds[embeds.indexOf("author")] || "",
+					offset,
+					max,
+					sort,
+					direction,
+				}
 			);
 			if (blog) {
 				res.status(200).jsonp(blog);
@@ -343,6 +370,10 @@ router.get("/blogs/:user?/:id?", async (req, res, next) => {
 			(await findAll(Blog, null, undefined, undefined, {
 				filter,
 				populate: embeds[embeds.indexOf("author")],
+				offset,
+				max,
+				sort,
+				direction,
 			})) || ""
 		);
 	}
@@ -387,6 +418,21 @@ router.patch("/blogs/:user/:blog", restrict, async (req, res, next) => {
 		return next(createError(500, err));
 	}
 });
+
+router.get("/", (_req, res) =>
+	res.jsonp(
+		router.stack
+			.filter((r) => r.route)
+			.map((r) => {
+				return {
+					method: Object.keys(r.route.methods)[0].toUpperCase(),
+					path: r.route.path,
+					restricted: r.route.stack[0].name === "restrict",
+				};
+			})
+			.sort((a, b) => a.method.localeCompare(b.method))
+	)
+);
 
 // Functions to run when the website starts up
 (async () => {

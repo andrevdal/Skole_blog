@@ -8,6 +8,29 @@ Returns a JSONP response unless specified otherwise. To get a callback append `?
 
 > **Warning**, take this output as an unordered object. The order of those keys may change at any time!
 
+### `GET /api/`
+
+To get a general overview over the available endpoints of the api you can make a GET request to `/` and it will return a dynamically generated array such as: 
+
+```json
+[
+	{
+		"method": "DELETE",
+		"path": "/user",
+		"restricted": true
+	},
+	{
+		"method": "GET",
+		"path": "/blogs/:user?/:id?",
+		"restricted": false
+	}
+]
+```
+
+-   The method represents the HTTP verb to be used. 
+-   The path represents the url relative to the base url of the api (`https://www.example.com/api/user`). 
+-   The restricted key shows if the route needs [authentification](./auth.md) to be used.  
+
 ### Embedding
 
 To embed a resource you must provide the http parameter `embed=` with a comma separeted list. For example:
@@ -61,6 +84,20 @@ GET /api/blogs?embed=author,data HTTP/2.0
 	}
 ]
 ```
+
+### Sorting
+
+For resources that return arrays, such as `/users` or `/blogs` you may pass the `orderby` and `direction` arguments.
+
+-   `orderby` can be any key in the requested object and it will be sorted by it. Defaults to `id`
+-   `direction` can be either `asc` or `desc` wether the items should be sorted **asc**ending or **desc**ending. Defaults to `asc`.
+
+### Pagination
+
+For resources that return arrays, such as `/users` or `/blogs` you may pass the `max` and `offset` arguments.
+
+-   `max` determines how many objects may be returned
+-   `offset` determines wether to ignores the first `x` objects.´
 
 ### POSTing
 
