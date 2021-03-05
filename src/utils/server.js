@@ -19,6 +19,7 @@ async function find(
 	let output;
 	if (populate) {
 		output = await Schema.findOne(query, filter).populate(populate);
+		if (!output) return null;
 		populate = populate.split(" ");
 		for (let i = 0; i < populate.length; i++) {
 			output[populate[i]] = JSON.parse(
@@ -75,6 +76,7 @@ async function findAll(
 		// TODO: When this website gets big FUCKING OPTIMISE THIS
 		// Also optimise the function above, `find`.
 		output = await Schema.find(query, filter, options).populate(populate);
+		if (!output) return null;
 		populate = populate.split(" ");
 		for (let i = 0; i < output.length; i++) {
 			for (let ii = 0; ii < populate.length; ii++) {

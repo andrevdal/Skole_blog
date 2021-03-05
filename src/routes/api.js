@@ -74,7 +74,7 @@ async function decodeAuth(auth) {
 // Authentification
 router.get("/login", async (req, res, next) => {
 	let user;
-	const expiresIn = 60 * 60;
+	const expiresIn = 60 * 60 * 1000;
 	try {
 		var { type, data } = await decodeAuth(
 			req.headers["authorization"] || req.cookies["token"]
