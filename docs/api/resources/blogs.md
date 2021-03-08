@@ -3,39 +3,43 @@
 This taken straight from `src/models/blogs.js`.
 
 ```js
-id: {
-	type: String,
-	default: () => flake.gen().toString(),
-	inmutable: true,
-},
-short_name: {
-	type: String,
-	required: true,
-},
-name: {
-	type: String,
-	required: true,
-	default: function () {
-		return this.short_name;
+const blogSchema = new mongoose.Schema({
+	id: {
+		type: String,
+		default: () => flake.gen().toString(),
+		inmutable: true,
 	},
-},
-description: {
-	type: String,
-	required: true,
-	default: "No description provided",
-},
-data: {
-	type: String,
-	required: true,
-	default: "No blog provided",
-	minlength: 5,
-	maxLength: 1000,
-},
-author: {
-	type: String,
-	required: true,
-	ref: "user",
-},
+	short_name: {
+		type: String,
+		required: true,
+		maxlength: 21,
+		match: /^[^|:!?&"#.,<> /*()]+$/,
+	},
+	name: {
+		type: String,
+		required: true,
+		default: function () {
+			return this.short_name;
+		},
+	},
+	description: {
+		type: String,
+		required: true,
+		default: "No description provided",
+	},
+	data: {
+		type: String,
+		required: true,
+		default: "No blog provided",
+		minlength: 5,
+		maxLength: 1000,
+	},
+	author: {
+		type: String,
+		required: true,
+		ref: "user",
+	},
+});
 ```
 
 For example:

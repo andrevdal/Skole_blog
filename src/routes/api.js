@@ -225,7 +225,7 @@ router.patch("/users/:user", restrict, async (req, res, next) => {
 		});
 	} catch (err) {
 		console.log(err);
-		return next(err);
+		return next(createError(err));
 	}
 });
 
@@ -286,7 +286,7 @@ router.patch("/user", restrict, async (req, res, next) => {
 		});
 	} catch (err) {
 		console.log(err);
-		return next(err);
+		return next(createError(err));
 	}
 });
 

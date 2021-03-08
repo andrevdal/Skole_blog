@@ -3,51 +3,45 @@
 This taken straight from `src/models/users.js` minus some elements that are not returned by the REST API such as the hash.
 
 ```js
-id: {
-	type: String,
-	default: () => flake.gen().toString(),
-	inmutable: true,
-},
-username: {
-	type: String,
-	required: true,
-	unique: true,
-	lowercase: true,
-	maxlength: 21,
-	match: /^[^|:!"#.,<>]*$/,
-},
-created_at: {
-	type: Date,
-	default: Date.now,
-	immutable: true,
-},
-admin: {
-	type: Boolean,
-	default: false,
-},
-external: {
-	twitter: {
-		url: String,
-		show: {
-			type: Boolean,
-			default: true,
-		},
+const userSchema = new mongoose.Schema({
+	id: {
+		type: String,
+		default: () => flake.gen().toString(),
+		inmutable: true,
 	},
-	youtube: {
-		url: String,
-		show: {
-			type: Boolean,
-			default: true,
-		},
+	username: {
+		type: String,
+		required: true,
+		unique: true,
+		lowercase: true,
+		maxlength: 21,
+		match: /^[^|:!?&"#.,<> /*()]+$/,
 	},
-	twitch: {
-		url: String,
-		show: {
-			type: Boolean,
-			default: true,
-		},
+	created_at: {
+		type: Date,
+		default: Date.now,
+		immutable: true,
 	},
-},
+	admin: {
+		type: Boolean,
+		default: false,
+	},
+	bio: {
+		type: String,
+		default: "No bio provided",
+	},
+	external: {
+		twitter: {
+			url: String,
+			show: {
+				type: Boolean,
+				default: true,
+			},
+		},
+		youtube: {/* Same thing as twitter */},
+		twitch: {/* Same thing as twitter */},
+	},
+});
 ```
 
 For example:

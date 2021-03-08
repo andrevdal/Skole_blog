@@ -17,6 +17,8 @@ const blogSchema = new mongoose.Schema({
 	short_name: {
 		type: String,
 		required: true,
+		maxlength: 21,
+		match: /^[^|:!?&"#.,<> /*()]+$/,
 	},
 	name: {
 		type: String,

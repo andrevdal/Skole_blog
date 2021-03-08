@@ -22,9 +22,7 @@ async function find(
 		if (!output) return null;
 		populate = populate.split(" ");
 		for (let i = 0; i < populate.length; i++) {
-			output[populate[i]] = JSON.parse(
-				JSON.stringify(output[populate[i]])
-			);
+			output[populate[i]] = output[populate[i]].toJSON ? output[populate[i]].toJSON() : output[populate[i]];
 		}
 	} else output = await Schema.findOne(query, filter);
 	return output;
@@ -80,9 +78,7 @@ async function findAll(
 		populate = populate.split(" ");
 		for (let i = 0; i < output.length; i++) {
 			for (let ii = 0; ii < populate.length; ii++) {
-				output[i][populate[ii]] = JSON.parse(
-					JSON.stringify(output[i][populate[ii]])
-				);
+				output[i][populate[ii]] = output[i][populate[ii]].toJSON ? output[i][populate[ii]].toJSON() : output[i][populate[ii]];
 			}
 		}
 	} else output = await Schema.find(query, filter, options);
