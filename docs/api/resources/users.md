@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
 		unique: true,
 		lowercase: true,
 		maxlength: 21,
-		match: /^[^|:!?&"#.,<> /*()]+$/,
+		match: /^(?!-)[a-z0-9-]+(?<!-)(\/(?!-)[a-z0-9-]+(?<!-))*(\/(?!-\.)[a-z0-9-\.]+(?<!-\.))?$/,
 	},
 	created_at: {
 		type: Date,
@@ -29,17 +29,49 @@ const userSchema = new mongoose.Schema({
 	bio: {
 		type: String,
 		default: "No bio provided",
+		maxLength: 50,
 	},
 	external: {
 		twitter: {
-			url: String,
+			url: {
+				type: String,
+				maxLength: 15,
+				match: /^@?(\w){1,15}$/,
+				set: (url) =>
+					`https://twitter.com/${
+						url.split("?")[0].split("/").splice(-1)[0]
+					}`,
+			},
 			show: {
 				type: Boolean,
-				default: true,
+				default: false,
 			},
 		},
-		youtube: {/* Same thing as twitter */},
-		twitch: {/* Same thing as twitter */},
+		youtube: {
+			url: {
+				type: String,
+			},
+			show: {
+				type: Boolean,
+				default: false,
+			},
+		},
+		twitch: {
+			url: {
+				type: String,
+				maxLength: 25,
+				minLength: 3,
+				match: /^(#)?[a-zA-Z0-9][\w]$/,
+				set: (url) =>
+					`https://twitch.tv/${
+						url.split("?")[0].split("/").splice(-1)[0]
+					}`,
+			},
+			show: {
+				type: Boolean,
+				default: false,
+			},
+		},
 	},
 });
 ```

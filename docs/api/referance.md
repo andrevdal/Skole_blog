@@ -10,7 +10,7 @@ Returns a JSONP response unless specified otherwise. To get a callback append `?
 
 ### `GET /api/`
 
-To get a general overview over the available endpoints of the api you can make a GET request to `/` and it will return a dynamically generated array such as: 
+To get a general overview over the available endpoints of the api you can make a GET request to `/` and it will return a dynamically generated array such as:
 
 ```json
 [
@@ -27,9 +27,31 @@ To get a general overview over the available endpoints of the api you can make a
 ]
 ```
 
--   The method represents the HTTP verb to be used. 
--   The path represents the url relative to the base url of the api (`https://www.example.com/api/user`). 
--   The restricted key shows if the route needs [authentification](./auth.md) to be used.  
+-   The method represents the HTTP verb to be used.
+-   The path represents the url relative to the base url of the api (`https://www.example.com/api/user`).
+-   The restricted key shows if the route needs [authentification](./auth.md) to be used.
+
+### POSTing
+
+For nested keys you may submit objects such as:
+
+```json
+{
+	"external.twitter.show": true
+}
+```
+
+is the same as
+
+```json
+{
+	"external": {
+		"twitter": {
+			"show": true
+		}
+	}
+}
+```
 
 ### Embedding
 

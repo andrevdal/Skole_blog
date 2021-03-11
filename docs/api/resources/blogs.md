@@ -13,11 +13,12 @@ const blogSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		maxlength: 21,
-		match: /^[^|:!?&"#.,<> /*()]+$/,
+		match: /^(?!-)[a-z0-9-]+(?<!-)(\/(?!-)[a-z0-9-]+(?<!-))*(\/(?!-\.)[a-z0-9-\.]+(?<!-\.))?$/,
 	},
 	name: {
 		type: String,
 		required: true,
+		maxLength: 50,
 		default: function () {
 			return this.short_name;
 		},
@@ -25,6 +26,7 @@ const blogSchema = new mongoose.Schema({
 	description: {
 		type: String,
 		required: true,
+		maxLength: 100,
 		default: "No description provided",
 	},
 	data: {

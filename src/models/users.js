@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
 		unique: true,
 		lowercase: true,
 		maxlength: 21,
-		match: /^[^|:!?&"#.,<> /*()]+$/,
+		match: /^(?!-)[a-z0-9-]+(?<!-)(\/(?!-)[a-z0-9-]+(?<!-))*(\/(?!-\.)[a-z0-9-\.]+(?<!-\.))?$/,
 	},
 	hash: {
 		type: String,
@@ -38,27 +38,48 @@ const userSchema = new mongoose.Schema({
 	bio: {
 		type: String,
 		default: "No bio provided",
+		maxLength: 50,
 	},
 	external: {
 		twitter: {
-			url: String,
+			url: {
+				type: String,
+				maxLength: 15,
+				match: /^@?(\w){1,15}$/,
+				set: (url) =>
+					`https://twitter.com/${
+						url.split("?")[0].split("/").splice(-1)[0]
+					}`,
+			},
 			show: {
 				type: Boolean,
-				default: true,
+				default: false,
 			},
 		},
 		youtube: {
-			url: String,
+			url: {
+				type: String,
+			},
 			show: {
 				type: Boolean,
-				default: true,
+				default: false,
 			},
 		},
 		twitch: {
-			url: String,
+			url: {
+				type: String,
+				maxLength: 25,
+				minLength: 3,
+				// Names such as ESL or Orb were given as prizes, you can't make accounts with then anymore but might aswell support them.
+				match: /^(#)?[a-zA-Z0-9][\w]$/,
+				set: (url) =>
+					`https://twitch.tv/${
+						url.split("?")[0].split("/").splice(-1)[0]
+					}`,
+			},
 			show: {
 				type: Boolean,
-				default: true,
+				default: false,
 			},
 		},
 	},
@@ -70,6 +91,9 @@ userSchema.method("toJSON", function () {
 	user.id = user._id;
 	delete user._id;
 	delete user.__v;
+	delete user.avatar;
+	for (let i in user.external)
+		if (!user.external[i].show) delete user.external[i].url;
 	return user;
 });
 const User = mongoose.model("user", userSchema);
