@@ -29,13 +29,17 @@ const userSchema = new mongoose.Schema({
 	bio: {
 		type: String,
 		default: "No bio provided",
-		maxLength: 50,
+		maxlength: 50,
+	},
+	avatar: {
+		type: String,
+		default: `https://identicon-api.herokuapp.com/${this._id}/300?format=png"`,
 	},
 	external: {
 		twitter: {
 			url: {
 				type: String,
-				maxLength: 15,
+				maxlength: 15,
 				match: /^@?(\w){1,15}$/,
 				set: (url) =>
 					`https://twitter.com/${
@@ -59,8 +63,9 @@ const userSchema = new mongoose.Schema({
 		twitch: {
 			url: {
 				type: String,
-				maxLength: 25,
-				minLength: 3,
+				maxlength: 25,
+				minlength: 3,
+				// Names such as ESL or Orb were given as prizes, you can't make accounts with then anymore but might aswell support them.
 				match: /^(#)?[a-zA-Z0-9][\w]$/,
 				set: (url) =>
 					`https://twitch.tv/${
@@ -94,7 +99,8 @@ For example:
 	"admin": false,
 	"username": "luca",
 	"created_at": "2021-02-04T07:47:58.780Z",
-	"id": "12438958361452544"
+	"id": "12438958361452544",
+	"avatar": "https://cdn.example.com/profile.png"
 }
 ```
 
