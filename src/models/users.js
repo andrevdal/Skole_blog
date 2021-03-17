@@ -38,13 +38,17 @@ const userSchema = new mongoose.Schema({
 	bio: {
 		type: String,
 		default: "No bio provided",
-		maxLength: 50,
+		maxlength: 50,
+	},
+	avatar: {
+		type: String,
+		default: `https://identicon-api.herokuapp.com/${this._id}/300?format=png"`,
 	},
 	external: {
 		twitter: {
 			url: {
 				type: String,
-				maxLength: 15,
+				maxlength: 15,
 				match: /^@?(\w){1,15}$/,
 				set: (url) =>
 					`https://twitter.com/${
@@ -68,8 +72,8 @@ const userSchema = new mongoose.Schema({
 		twitch: {
 			url: {
 				type: String,
-				maxLength: 25,
-				minLength: 3,
+				maxlength: 25,
+				minlength: 3,
 				// Names such as ESL or Orb were given as prizes, you can't make accounts with then anymore but might aswell support them.
 				match: /^(#)?[a-zA-Z0-9][\w]$/,
 				set: (url) =>
@@ -91,7 +95,10 @@ userSchema.method("toJSON", function () {
 	user.id = user._id;
 	delete user._id;
 	delete user.__v;
-	delete user.avatar;
+	// Sending an avatar can be megabytes of data, so this would be a filter
+	// But not sending anything is also a bad idea
+	// TODO: Figure it out
+	// if (user.avatar.length >= 200) delete user.avatar;
 	for (let i in user.external)
 		if (!user.external[i].show) delete user.external[i].url;
 	return user;

@@ -1,14 +1,11 @@
 const createError = require("http-errors");
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const fs = require("fs");
-const path = require("path");
+const { readFileSync } = require("fs");
+const { join } = require("path");
 
 const config = JSON.parse(
-	fs.readFileSync(
-		path.join(__dirname, "..", "..", "confs", "config.json"),
-		"utf-8"
-	)
+	readFileSync(join(__dirname, "..", "..", "confs", "config.json"), "utf-8")
 );
 
 const { sha256 } = require("../utils/common.js");
@@ -408,8 +405,9 @@ router.patch("/blogs/:user/:blog", restrict, async (req, res, next) => {
 	if (user.id !== req.user.id || req.user.admin)
 		return next(createError(403, "Not allowed"));
 	const blog = await find(Blog, "short_name", req.params.blog, {
-		author: user.id,
+		author: user._id,
 	});
+	if (!blog) return next(createError(404, "No blog found"));
 	try {
 		res.jsonp({
 			blog: await Blog.findByIdAndUpdate(blog._id, req.body),

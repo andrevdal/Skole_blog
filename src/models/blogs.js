@@ -23,7 +23,7 @@ const blogSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true,
-		maxLength: 50,
+		maxlength: 50,
 		default: function () {
 			return this.short_name;
 		},
@@ -31,7 +31,7 @@ const blogSchema = new mongoose.Schema({
 	description: {
 		type: String,
 		required: true,
-		maxLength: 100,
+		maxlength: 100,
 		default: "No description provided",
 	},
 	data: {
@@ -39,7 +39,7 @@ const blogSchema = new mongoose.Schema({
 		required: true,
 		default: "No blog provided",
 		minlength: 5,
-		maxLength: 1000,
+		maxlength: 1000,
 	},
 	author: {
 		type: String,
