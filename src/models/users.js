@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
 		unique: true,
 		lowercase: true,
 		maxlength: 21,
-		match: /^(?!-)[a-z0-9-]+(?<!-)(\/(?!-)[a-z0-9-]+(?<!-))*(\/(?!-\.)[a-z0-9-\.]+(?<!-\.))?$/,
+		match: /^(?!-)[A-z0-9-]+(?<!-)((?!-)[A-z0-9-]+(?<!-))*((?!-\.)[A-z0-9-\.]+(?<!-\.))?$/,
 	},
 	hash: {
 		type: String,

@@ -12,7 +12,7 @@ async function find(
 	name,
 	value = null,
 	query = {},
-	{ filter = "", populate = "" } = { filter: "", populate: "" }
+	{ filter = "", populate = "" } = {}
 ) {
 	if (isNaN(value)) query[name] = value;
 	else query["_id"] = value;
@@ -50,14 +50,7 @@ async function findAll(
 		max = undefined,
 		sort = "_id",
 		direction = 1,
-	} = {
-		filter: "",
-		populate: "",
-		offset: 0,
-		max: undefined,
-		sort: "_id",
-		direction: 1,
-	}
+	} = {}
 ) {
 	if (isNaN(value)) query[name] = value;
 	else if (value) query["_id"] = value;

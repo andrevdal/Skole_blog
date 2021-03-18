@@ -124,3 +124,15 @@ For resources that return arrays, such as `/users` or `/blogs` you may pass the 
 ### POSTing
 
 While we do support form encoded HTTP bodies, JSON is the prefered choice.
+
+### Rate limitation
+
+By default all api routes are rate limited to 1000 requests allowed every 10 minutes. When an IP address is rate limited it will return a JSON object with a status of `429`:
+
+```json
+{
+	"message": "You are making too many requests, please try again later. "
+}
+```
+
+Other routes may have different rate limitations and they should be specified in the documentation.

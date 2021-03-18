@@ -1,5 +1,15 @@
 ## Login
 
+### Rate limitation
+
+#### `/login`
+
+The rate limitation is reduced to 20 requests every 10 minutes.
+
+#### `/register`
+
+The rate limitation is reduced to 10 requests every 10 minutes.
+
 ### Basic
 
 To authentificate you must submit a header that is a base64 encoded string of the username and sha256 hashed password. Such as

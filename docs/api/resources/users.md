@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
 		unique: true,
 		lowercase: true,
 		maxlength: 21,
-		match: /^(?!-)[a-z0-9-]+(?<!-)(\/(?!-)[a-z0-9-]+(?<!-))*(\/(?!-\.)[a-z0-9-\.]+(?<!-\.))?$/,
+		match: /^(?!-)[A-z0-9-]+(?<!-)((?!-)[A-z0-9-]+(?<!-))*((?!-\.)[A-z0-9-\.]+(?<!-\.))?$/,
 	},
 	created_at: {
 		type: Date,
@@ -121,6 +121,7 @@ Returns the logged in user.
 ### `DELETE /user`
 
 **Requires [authentification](../auth)**
+**The rate limitation is reduced to 5 requests every 10 minutes.**
 
 Must also provide a `hash` which is the user's password sha256 hashed.
 An optional `keep` boolean may be provided if a user wishes for their blogs to be transfered to a user called `archive`.
