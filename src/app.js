@@ -5,9 +5,11 @@ const path = require("path");
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
+const cors = require("cors");
+
 // Routers
-const indexRouter = require("./routes/index");
 const apiRouter = require("./routes/api");
+const indexRouter = require("./routes/index");
 
 const debug = process.env.NODE_ENV === "development";
 let http;
@@ -32,7 +34,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.set("trust proxy", 1);
 
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(config.secret));

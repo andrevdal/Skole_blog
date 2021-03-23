@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
 		unique: true,
 		lowercase: true,
 		maxlength: 21,
-		match: /^[^|:!"#.,<>]*$/,
+		match: /^(?!-)[A-z0-9-]+(?<!-)((?!-)[A-z0-9-]+(?<!-))*((?!-\.)[A-z0-9-\.]+(?<!-\.))?$/,
 	},
 	hash: {
 		type: String,
@@ -35,26 +35,57 @@ const userSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	bio: {
+		type: String,
+		default: "No bio provided",
+		maxlength: 50,
+	},
+	avatar: {
+		type: String,
+		default: function() {
+			return `https://identicon-api.herokuapp.com/${this._id}/300?format=png`
+		},
+	},
 	external: {
 		twitter: {
-			url: String,
+			url: {
+				type: String,
+				maxlength: 15,
+				match: /^@?(\w){1,15}$/,
+				set: (url) =>
+					`https://twitter.com/${
+						url.split("?")[0].split("/").splice(-1)[0]
+					}`,
+			},
 			show: {
 				type: Boolean,
-				default: true,
+				default: false,
 			},
 		},
 		youtube: {
-			url: String,
+			url: {
+				type: String,
+			},
 			show: {
 				type: Boolean,
-				default: true,
+				default: false,
 			},
 		},
 		twitch: {
-			url: String,
+			url: {
+				type: String,
+				maxlength: 25,
+				minlength: 3,
+				// Names such as ESL or Orb were given as prizes, you can't make accounts with then anymore but might aswell support them.
+				match: /^(#)?[a-zA-Z0-9][\w]$/,
+				set: (url) =>
+					`https://twitch.tv/${
+						url.split("?")[0].split("/").splice(-1)[0]
+					}`,
+			},
 			show: {
 				type: Boolean,
-				default: true,
+				default: false,
 			},
 		},
 	},
@@ -66,6 +97,12 @@ userSchema.method("toJSON", function () {
 	user.id = user._id;
 	delete user._id;
 	delete user.__v;
+	// Sending an avatar can be megabytes of data, so this would be a filter
+	// But not sending anything is also a bad idea
+	// TODO: Figure it out
+	// if (user.avatar.length >= 200) delete user.avatar;
+	for (let i in user.external)
+		if (!user.external[i].show) delete user.external[i].url;
 	return user;
 });
 const User = mongoose.model("user", userSchema);

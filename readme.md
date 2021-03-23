@@ -75,8 +75,6 @@ If you wish to host your own instance it's best to optimise a couple of stuff.
     }
     ```
 
-```
-
 2. `npm start` for self hosting and not developer mode
 
 ## Developers
@@ -84,4 +82,3 @@ If you wish to host your own instance it's best to optimise a couple of stuff.
 ### Formatting
 
 After saving your code please run `npm run format` to format the code as per the configuration in `package.json` in `prettier`
-```

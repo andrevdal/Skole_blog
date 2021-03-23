@@ -1,50 +1,59 @@
 # Blogs object
-This taken straight from `src/models/blogs.js`. 
+
+This taken straight from `src/models/blogs.js`.
 
 ```js
-id: {
-	type: String,
-	default: () => flake.gen().toString(),
-	inmutable: true,
-},
-short_name: {
-	type: String,
-	required: true,
-},
-name: {
-	type: String,
-	required: true,
-	default: function () {
-		return this.short_name;
+const blogSchema = new mongoose.Schema({
+	id: {
+		type: String,
+		default: () => flake.gen().toString(),
+		inmutable: true,
 	},
-},
-description: {
-	type: String,
-	required: true,
-	default: "No description provided",
-},
-data: {
-	type: String,
-	required: true,
-	default: "No blog provided",
-	minlength: 5,
-	maxLength: 1000,
-},
-author: {
-	type: String,
-	required: true,
-},
+	short_name: {
+		type: String,
+		required: true,
+		maxlength: 21,
+		match: /^(?!-)[A-z0-9-]+(?<!-)((?!-)[A-z0-9-]+(?<!-))*((?!-\.)[A-z0-9-\.]+(?<!-\.))?$/,
+	},
+	name: {
+		type: String,
+		required: true,
+		maxlength: 50,
+		default: function () {
+			return this.short_name;
+		},
+	},
+	description: {
+		type: String,
+		required: true,
+		maxlength: 100,
+		default: "No description provided",
+	},
+	data: {
+		type: String,
+		required: true,
+		default: "No blog provided",
+		minlength: 5,
+		maxlength: 1000,
+	},
+	author: {
+		type: String,
+		required: true,
+		ref: "user",
+	},
+});
 ```
 
-For example: 
+For example:
+
 ```json
 {
-	"description": "Really scary",
-	"data": "## Hello world! \n **I** __love__ *stuff*. <script>alert(1)</script>",
-	"name": "Virus.exe",
-	"short_name": "virus",
-	"author": "12438958361452544",
-	"id": "12486445617029120"
+	"description": "The purpose of this user revealed",
+	"data": "# Who are you?\nThis user is created automatically by the server. It's purpose is to archive blogs from users that want to delete their account but don't want to delete their blogs. \nAs a side note it's also used for testing. \n",
+	"name": "What is this user?",
+	"short_name": "readme",
+	"author": "19165880630026240",
+	"id": "19165880650997760"
 }
 ```
 
@@ -54,14 +63,17 @@ For example:
 
 ### `GET /blogs/:user/:blog`
 
-All parameters are optional. 
-`blog` and `user` can be either IDs or usernames and short_name. 
+All parameters are optional.
+`blog` and `user` can be either IDs or usernames and short_name.
+You may embed `author` or `data`.
+The `data` field is automatically embeded when both `user` and `blog` parameters are provided.
+The `author` field, if embeded, will be a user object of the author, otherwise it will be a user ID.
 
 ```http
 GET /api/blogs/:user/:blog HTTP/2.0
 ```
 
-If no user is provided then it will return all blogs. 
+If no user is provided then it will return all blogs.
 If no blog is provided then it will return all blogs that are written by that user.
 
 ### `POST /blogs`
@@ -69,7 +81,7 @@ If no blog is provided then it will return all blogs that are written by that us
 **Requires [authentification](../auth)**
 
 Only `name` is optional.
-`data` can be markdown formatted, and it will be displayed as such. 
+`data` can be markdown formatted, and it will be displayed as such.
 
 ```http
 POST /api/blogs HTTP/2.0
@@ -87,7 +99,7 @@ Returns the newly created blog.
 
 **Requires [authentification](../auth)**
 
-Deletes a user's blog. This endpoint is available to owners of the blog or a user with `admin: true`. 
+Deletes a user's blog. This endpoint is available to owners of the blog or a user with `admin: true`.
 
 ```http
 DELETE /api/:user/:blog HTTP/2.0

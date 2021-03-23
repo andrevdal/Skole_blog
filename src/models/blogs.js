@@ -1,3 +1,4 @@
+const { User } = require("./users");
 const mongoose = require("mongoose");
 const FlakeId = require("flakeid");
 //initiate flake
@@ -16,10 +17,14 @@ const blogSchema = new mongoose.Schema({
 	short_name: {
 		type: String,
 		required: true,
+		maxlength: 21,
+		lowercase: true,
+		match: /^(?!-)[A-z0-9-]+(?<!-)((?!-)[A-z0-9-]+(?<!-))*((?!-\.)[A-z0-9-\.]+(?<!-\.))?$/,
 	},
 	name: {
 		type: String,
 		required: true,
+		maxlength: 50,
 		default: function () {
 			return this.short_name;
 		},
@@ -27,6 +32,7 @@ const blogSchema = new mongoose.Schema({
 	description: {
 		type: String,
 		required: true,
+		maxlength: 100,
 		default: "No description provided",
 	},
 	data: {
@@ -34,11 +40,12 @@ const blogSchema = new mongoose.Schema({
 		required: true,
 		default: "No blog provided",
 		minlength: 5,
-		maxLength: 1000,
+		maxlength: 1000,
 	},
 	author: {
 		type: String,
 		required: true,
+		ref: "user",
 	},
 });
 blogSchema.method("toJSON", function () {
