@@ -18,6 +18,7 @@ const blogSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		maxlength: 21,
+		lowercase: true,
 		match: /^(?!-)[A-z0-9-]+(?<!-)((?!-)[A-z0-9-]+(?<!-))*((?!-\.)[A-z0-9-\.]+(?<!-\.))?$/,
 	},
 	name: {

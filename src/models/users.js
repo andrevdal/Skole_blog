@@ -42,7 +42,9 @@ const userSchema = new mongoose.Schema({
 	},
 	avatar: {
 		type: String,
-		default: `https://identicon-api.herokuapp.com/${this._id}/300?format=png"`,
+		default: function() {
+			return `https://identicon-api.herokuapp.com/${this._id}/300?format=png`
+		},
 	},
 	external: {
 		twitter: {
